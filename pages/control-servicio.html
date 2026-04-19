@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Control de servicio</title>
+    <link rel="stylesheet" href="../common.css" />
+  </head>
+  <body>
+    <div class="page-inner">
+      <h2>Control de servicio</h2>
+      <p>
+        Elija <strong>cliente</strong> y <strong>unidad</strong>; luego el <strong>mes y año</strong>. La cuadrícula es distinta por cada combinación: al cambiar de unidad o cliente se cargan los datos ya guardados para seguir registrando día a día. La
+        <strong>cantidad de personal</strong> y los conteos (incluida la fila <strong>Bajas</strong>) se guardan en la hoja de cálculo.
+      </p>
+
+      <div id="blockNoAdmin" class="card" hidden>
+        <p style="margin: 0">Solo administradores pueden usar este módulo.</p>
+      </div>
+
+      <div id="blockAdmin" hidden>
+        <div id="msg" class="msg msg--error" role="alert" hidden></div>
+
+        <section class="card" style="margin-bottom: 1rem">
+          <h3 class="kpis-section-title">Cliente, unidad y periodo</h3>
+          <div class="kpis-form-grid" style="align-items: end">
+            <div class="field" style="margin-bottom: 0">
+              <label for="selCliente">Cliente</label>
+              <select class="input" id="selCliente"></select>
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label for="selUnidad">Unidad</label>
+              <select class="input" id="selUnidad" disabled></select>
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label for="selMes">Mes</label>
+              <select class="input" id="selMes"></select>
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label for="selAnio">Año</label>
+              <select class="input" id="selAnio"></select>
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label for="inpPersonal">Cantidad de personal</label>
+              <input class="input" id="inpPersonal" type="number" min="0" step="1" inputmode="numeric" placeholder="0" />
+            </div>
+            <div class="field kpis-form-actions" style="margin-bottom: 0">
+              <button type="button" class="btn btn--primary" id="btnCargar" style="margin-top: 1.35rem; width: 100%">Cargar cuadrícula</button>
+            </div>
+          </div>
+        </section>
+
+        <div id="loading" class="msg msg--info" hidden>Cargando…</div>
+
+        <div id="wrapGrid" hidden>
+          <div class="toolbar" style="margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem">
+            <span class="toolbar-spacer" style="flex: 1; min-width: 0"></span>
+            <button type="button" class="btn btn--primary" id="btnGuardar">
+              <span id="btnGuardarLabel">Guardar</span>
+              <span id="btnGuardarSpinner" class="spinner" hidden aria-hidden="true"></span>
+            </button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table control-srv-table" id="tblGrid" aria-label="Cuadrícula por día"></table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="../js/config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/control-servicio.js"></script>
+  </body>
+</html>

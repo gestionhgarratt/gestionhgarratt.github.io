@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Incidentes</title>
+    <link rel="stylesheet" href="../common.css" />
+  </head>
+  <body>
+    <div class="page-inner">
+      <h2>Incidentes</h2>
+      <p>
+        Registro de incidentes. Tras <strong>Guardar</strong> el formulario se vacía para un nuevo registro; se
+        mantienen cliente y unidad elegidos arriba.
+      </p>
+
+      <div id="blockDeny" class="card" hidden>
+        <p style="margin: 0">Tu usuario no puede acceder a este formulario.</p>
+      </div>
+
+      <div id="blockMain" hidden>
+        <div id="msgTop" class="msg msg--error" role="alert" hidden></div>
+
+        <div class="card" style="margin-bottom: 1rem">
+          <h3 style="margin: 0 0 0.75rem; font-size: 1.05rem">Datos generales</h3>
+          <div class="super-meta">
+            <div class="field" style="margin-bottom: 0">
+              <label>Fecha y hora</label>
+              <div class="input" id="fechaHoraDisplay" style="background: var(--color-bg); cursor: default"></div>
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label>Usuario</label>
+              <div class="input" id="usuarioDisplay" style="background: var(--color-bg); cursor: default"></div>
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label for="selCliente">Cliente</label>
+              <select class="input" id="selCliente" required>
+                <option value="">— Cargando —</option>
+              </select>
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label for="selUnidad">Unidad</label>
+              <select class="input" id="selUnidad" required disabled>
+                <option value="">— Elija primero un cliente —</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="stack" class="inc-stack" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/cloudinary-upload.js"></script>
+    <script src="../js/incidentes.js"></script>
+  </body>
+</html>

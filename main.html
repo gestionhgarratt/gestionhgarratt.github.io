@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Control Supervisión y KPIs</title>
+    <link rel="stylesheet" href="common.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside id="sidebar" class="app-shell__sidebar" aria-label="Navegación principal">
+        <div class="app-shell__sidebar-header">
+          <strong id="userLine">—</strong>
+          <span id="cargoLine">—</span>
+        </div>
+        <nav id="nav" class="app-shell__nav"></nav>
+        <div class="app-shell__sidebar-footer">
+          <button type="button" class="btn btn--ghost" id="btnLogout" style="width: 100%">Cerrar sesión</button>
+        </div>
+      </aside>
+      <div id="backdrop" class="app-shell__backdrop" aria-hidden="true"></div>
+      <div class="app-shell__main">
+        <header class="app-shell__topbar">
+          <button type="button" class="app-shell__menu-toggle" id="btnMenu" aria-label="Abrir menú">
+            ☰
+          </button>
+          <h1 class="app-shell__topbar-title" id="topTitle">Dashboard</h1>
+          <div id="topUserSlot" class="app-shell__topbar-user" hidden>
+            <span class="app-shell__topbar-user-label" id="topUserLabel"></span>
+            <button type="button" class="btn btn--ghost btn--compact-top" id="btnLogoutTop">Cerrar sesión</button>
+          </div>
+        </header>
+        <div class="app-shell__frame-wrap">
+          <iframe id="contentFrame" class="app-shell__frame" title="Contenido del módulo" src="about:blank"></iframe>
+        </div>
+      </div>
+      <nav id="bottomNav" class="app-shell__bottomnav" hidden aria-label="Módulos"></nav>
+    </div>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app-shell.js"></script>
+  </body>
+</html>

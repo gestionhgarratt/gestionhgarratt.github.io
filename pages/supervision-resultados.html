@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Resultados supervisión</title>
+    <link rel="stylesheet" href="../common.css" />
+  </head>
+  <body>
+    <div class="page-inner">
+      <h2>Resultados de supervisión</h2>
+      <p>Listado de registros enviados desde el formulario de supervisión. Solo administradores.</p>
+
+      <div id="blockNoAdmin" class="card" hidden>
+        <p style="margin: 0">No tienes permiso para ver este módulo.</p>
+      </div>
+
+      <div id="blockAdmin">
+        <div id="msg" class="msg msg--error" role="alert" hidden></div>
+        <div class="toolbar">
+          <button type="button" class="btn btn--ghost" id="btnRefrescar">Actualizar</button>
+        </div>
+        <div id="loading" class="msg msg--info" hidden>Cargando…</div>
+        <div class="table-wrap">
+          <table class="data-table" aria-label="Supervisiones">
+            <thead>
+              <tr>
+                <th>Fecha y hora</th>
+                <th>Supervisor</th>
+                <th>Cliente</th>
+                <th>Unidad</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <dialog id="dlgDetalle" class="modal modal--wide" aria-labelledby="dlgDetalleTitle">
+      <div class="modal__header">
+        <h3 id="dlgDetalleTitle">Detalle de supervisión</h3>
+      </div>
+      <div class="modal__body" id="dlgDetalleBody"></div>
+      <div class="modal__footer">
+        <button type="button" class="btn btn--primary" id="btnDlgCerrar">Cerrar</button>
+      </div>
+    </dialog>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/supervision-resultados.js"></script>
+  </body>
+</html>

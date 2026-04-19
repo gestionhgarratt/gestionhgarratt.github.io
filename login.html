@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Iniciar sesión — Control Supervisión y KPIs</title>
+    <link rel="stylesheet" href="common.css" />
+  </head>
+  <body>
+    <div class="login-page">
+      <div class="login-page__inner">
+        <div class="login-page__brand">
+          <h1>Control Supervisión y KPIs</h1>
+          <p>Ingresa con tu usuario corporativo</p>
+        </div>
+        <div class="card">
+          <div id="msg" class="msg msg--error" role="alert" hidden></div>
+          <form id="formLogin" action="#" method="post" novalidate>
+            <div class="field">
+              <label for="usuario">Usuario</label>
+              <input class="input" id="usuario" name="usuario" type="text" autocomplete="username" required />
+            </div>
+            <div class="field">
+              <label for="password">Contraseña</label>
+              <input
+                class="input"
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+              />
+            </div>
+            <button class="btn btn--primary" type="submit" id="btnSubmit" style="width: 100%">
+              <span id="btnLabel">Entrar</span>
+              <span id="btnSpinner" class="spinner" hidden aria-hidden="true"></span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script src="js/config.js" defer></script>
+    <script src="js/api.js" defer></script>
+    <script src="js/auth.js" defer></script>
+    <script src="js/login.js" defer></script>
+  </body>
+</html>

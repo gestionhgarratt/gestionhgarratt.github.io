@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Supervisión</title>
+    <link rel="stylesheet" href="../common.css" />
+  </head>
+  <body>
+    <div class="page-inner">
+      <h2>Supervisión</h2>
+      <p>Registro de visita de supervisión. Las fotos se suben a Cloudinary antes de enviar el formulario.</p>
+
+      <div id="blockDeny" class="card" hidden>
+        <p style="margin: 0">Tu usuario no puede acceder a este formulario.</p>
+      </div>
+
+      <form id="formSupervision" class="card" hidden>
+        <div id="msgTop" class="msg msg--error" role="alert" hidden></div>
+
+        <div class="super-meta">
+          <div class="field" style="margin-bottom: 0">
+            <label>Fecha y hora</label>
+            <div class="input" id="fechaHoraDisplay" style="background: var(--color-bg); cursor: default"></div>
+          </div>
+          <div class="field" style="margin-bottom: 0">
+            <label>Supervisor</label>
+            <div class="input" id="supervisorDisplay" style="background: var(--color-bg); cursor: default"></div>
+          </div>
+          <div class="field" style="margin-bottom: 0">
+            <label for="selCliente">Cliente</label>
+            <select class="input" id="selCliente" required>
+              <option value="">— Cargando —</option>
+            </select>
+          </div>
+          <div class="field" style="margin-bottom: 0">
+            <label for="selUnidad">Unidad</label>
+            <select class="input" id="selUnidad" required disabled>
+              <option value="">— Elija primero un cliente —</option>
+            </select>
+          </div>
+        </div>
+
+        <section class="super-block" aria-labelledby="t1">
+          <h3 id="t1" class="super-block__title">Presentación</h3>
+
+          <div class="rate-row">
+            <span class="rate-row__label">Uniforme (1 a 5)</span>
+            <div class="rate js-rating" data-hid="hid_pr_uniforme"></div>
+            <input type="hidden" id="hid_pr_uniforme" value="" />
+          </div>
+          <div class="rate-row">
+            <span class="rate-row__label">Aseo (1 a 5)</span>
+            <div class="rate js-rating" data-hid="hid_pr_aseo"></div>
+            <input type="hidden" id="hid_pr_aseo" value="" />
+          </div>
+
+          <div class="photo-group">
+            <span class="photo-group__label">Fotos — Uniforme</span>
+            <div class="photo-actions">
+              <label class="btn btn--ghost"
+                >Cámara
+                <input type="file" accept="image/*" capture="environment" class="visually-hidden js-photo-file" data-url="url_pr_uniforme" />
+              </label>
+              <label class="btn btn--ghost"
+                >Galería
+                <input type="file" accept="image/*" class="visually-hidden js-photo-file" data-url="url_pr_uniforme" />
+              </label>
+            </div>
+            <input type="hidden" id="url_pr_uniforme" value="" />
+            <div class="photo-preview js-photo-preview" data-url="url_pr_uniforme">
+              <span class="photo-preview__empty">Sin imagen (opcional)</span>
+            </div>
+            <div class="photo-status js-photo-status" data-url="url_pr_uniforme"></div>
+          </div>
+
+          <div class="photo-group">
+            <span class="photo-group__label">Fotos — Aseo</span>
+            <div class="photo-actions">
+              <label class="btn btn--ghost"
+                >Cámara
+                <input type="file" accept="image/*" capture="environment" class="visually-hidden js-photo-file" data-url="url_pr_aseo" />
+              </label>
+              <label class="btn btn--ghost"
+                >Galería
+                <input type="file" accept="image/*" class="visually-hidden js-photo-file" data-url="url_pr_aseo" />
+              </label>
+            </div>
+            <input type="hidden" id="url_pr_aseo" value="" />
+            <div class="photo-preview js-photo-preview" data-url="url_pr_aseo">
+              <span class="photo-preview__empty">Sin imagen (opcional)</span>
+            </div>
+            <div class="photo-status js-photo-status" data-url="url_pr_aseo"></div>
+          </div>
+
+          <div class="field" style="margin-top: 1rem; margin-bottom: 0">
+            <label for="txt_pr_obs">Observación</label>
+            <textarea class="input" id="txt_pr_obs" rows="3" style="min-height: 5rem; resize: vertical"></textarea>
+          </div>
+        </section>
+
+        <section class="super-block" aria-labelledby="t2">
+          <h3 id="t2" class="super-block__title">Conocimiento</h3>
+          <div class="rate-row">
+            <span class="rate-row__label">Conocimiento de funciones generales (1 a 5)</span>
+            <div class="rate js-rating" data-hid="hid_co_gen"></div>
+            <input type="hidden" id="hid_co_gen" value="" />
+          </div>
+          <div class="rate-row">
+            <span class="rate-row__label">Conocimiento de funciones específicas (1 a 5)</span>
+            <div class="rate js-rating" data-hid="hid_co_esp"></div>
+            <input type="hidden" id="hid_co_esp" value="" />
+          </div>
+          <div class="field" style="margin-top: 1rem; margin-bottom: 0">
+            <label for="txt_co_obs">Observación</label>
+            <textarea class="input" id="txt_co_obs" rows="3" style="min-height: 5rem; resize: vertical"></textarea>
+          </div>
+        </section>
+
+        <section class="super-block" aria-labelledby="t3">
+          <h3 id="t3" class="super-block__title">Documentación</h3>
+          <div class="rate-row">
+            <span class="rate-row__label">Carnet SUCAMEC vigente</span>
+            <div class="binary" data-hid="hid_doc_sucamec">
+              <button type="button" class="binary__btn" data-v="cumple">Cumple</button>
+              <button type="button" class="binary__btn" data-v="no_cumple">No cumple</button>
+            </div>
+            <input type="hidden" id="hid_doc_sucamec" value="" />
+          </div>
+
+          <div class="rate-row" id="rowL4">
+            <label class="chk-inline">
+              <input type="checkbox" id="chk_l4_na" checked />
+              Licencia L4: no aplica (sin evaluar)
+            </label>
+            <div id="rowL4Choice" class="rate-row" style="margin-top: 0.75rem; margin-bottom: 0">
+              <span class="rate-row__label">Licencia L4 vigente</span>
+              <div class="binary" data-hid="hid_doc_l4" id="wrapL4Binary">
+                <button type="button" class="binary__btn" data-v="cumple">Cumple</button>
+                <button type="button" class="binary__btn" data-v="no_cumple">No cumple</button>
+              </div>
+              <input type="hidden" id="hid_doc_l4" value="" />
+            </div>
+          </div>
+
+          <div class="rate-row">
+            <span class="rate-row__label">Funciones del puesto documentadas (1 a 5)</span>
+            <div class="rate js-rating" data-hid="hid_doc_fun"></div>
+            <input type="hidden" id="hid_doc_fun" value="" />
+          </div>
+          <div class="rate-row">
+            <span class="rate-row__label">Cuaderno de ocurrencias (1 a 5)</span>
+            <div class="rate js-rating" data-hid="hid_doc_cuad"></div>
+            <input type="hidden" id="hid_doc_cuad" value="" />
+          </div>
+
+          <div class="photo-group">
+            <span class="photo-group__label">Foto del bloque documentación</span>
+            <div class="photo-actions">
+              <label class="btn btn--ghost"
+                >Cámara
+                <input type="file" accept="image/*" capture="environment" class="visually-hidden js-photo-file" data-url="url_doc" />
+              </label>
+              <label class="btn btn--ghost"
+                >Galería
+                <input type="file" accept="image/*" class="visually-hidden js-photo-file" data-url="url_doc" />
+              </label>
+            </div>
+            <input type="hidden" id="url_doc" value="" />
+            <div class="photo-preview js-photo-preview" data-url="url_doc">
+              <span class="photo-preview__empty">Sin imagen (opcional)</span>
+            </div>
+            <div class="photo-status js-photo-status" data-url="url_doc"></div>
+          </div>
+
+          <div class="field" style="margin-top: 1rem; margin-bottom: 0">
+            <label for="txt_doc_obs">Observación</label>
+            <textarea class="input" id="txt_doc_obs" rows="3" style="min-height: 5rem; resize: vertical"></textarea>
+          </div>
+        </section>
+
+        <section class="super-block" aria-labelledby="t4">
+          <h3 id="t4" class="super-block__title">Percepción del cliente</h3>
+          <div class="rate-row">
+            <span class="rate-row__label">Calificación del cliente sobre el personal de seguridad (1 a 5)</span>
+            <div class="rate js-rating" data-hid="hid_pe_pers"></div>
+            <input type="hidden" id="hid_pe_pers" value="" />
+          </div>
+          <div class="rate-row">
+            <span class="rate-row__label">Calificación del cliente sobre el supervisor (1 a 5)</span>
+            <div class="rate js-rating" data-hid="hid_pe_sup"></div>
+            <input type="hidden" id="hid_pe_sup" value="" />
+          </div>
+          <div class="rate-row">
+            <span class="rate-row__label">Calificación del cliente sobre la respuesta administrativa (1 a 5)</span>
+            <div class="rate js-rating" data-hid="hid_pe_resp"></div>
+            <input type="hidden" id="hid_pe_resp" value="" />
+          </div>
+
+          <div class="photo-group">
+            <span class="photo-group__label">Foto del bloque percepción del cliente</span>
+            <div class="photo-actions">
+              <label class="btn btn--ghost"
+                >Cámara
+                <input type="file" accept="image/*" capture="environment" class="visually-hidden js-photo-file" data-url="url_pe" />
+              </label>
+              <label class="btn btn--ghost"
+                >Galería
+                <input type="file" accept="image/*" class="visually-hidden js-photo-file" data-url="url_pe" />
+              </label>
+            </div>
+            <input type="hidden" id="url_pe" value="" />
+            <div class="photo-preview js-photo-preview" data-url="url_pe">
+              <span class="photo-preview__empty">Sin imagen (opcional)</span>
+            </div>
+            <div class="photo-status js-photo-status" data-url="url_pe"></div>
+          </div>
+
+          <div class="field" style="margin-top: 1rem; margin-bottom: 0">
+            <label for="txt_pe_obs">Observación</label>
+            <textarea class="input" id="txt_pe_obs" rows="3" style="min-height: 5rem; resize: vertical"></textarea>
+          </div>
+        </section>
+
+        <div class="toolbar" style="margin-top: 1rem; margin-bottom: 0">
+          <button type="submit" class="btn btn--primary" id="btnEnviar">
+            <span id="btnEnviarLabel">Enviar supervisión</span>
+            <span id="btnEnviarSpinner" class="spinner" hidden aria-hidden="true"></span>
+          </button>
+          <button type="button" class="btn btn--ghost" id="btnLimpiar">Limpiar formulario</button>
+        </div>
+      </form>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/cloudinary-upload.js"></script>
+    <script src="../js/supervision.js"></script>
+  </body>
+</html>

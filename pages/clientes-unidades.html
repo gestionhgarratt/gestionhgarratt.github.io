@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Clientes y unidades</title>
+    <link rel="stylesheet" href="../common.css" />
+  </head>
+  <body>
+    <div class="page-inner">
+      <h2>Clientes y unidades</h2>
+      <p>
+        Crea <strong>clientes</strong> (nombre y estado). Selecciona un cliente para ver y crear sus
+        <strong>unidades</strong> (nombre, supervisor de la lista de usuarios tipo supervisor, rondas mensuales).
+      </p>
+
+      <div id="blockNoAdmin" class="card" hidden>
+        <p style="margin: 0">No tienes permiso para este módulo.</p>
+      </div>
+
+      <div id="blockAdmin">
+        <div id="msg" class="msg msg--error" role="alert" hidden></div>
+
+        <section class="cu-section card" style="margin-bottom: 1rem">
+          <h3 style="margin: 0 0 0.75rem; font-size: 1.05rem">Clientes</h3>
+          <div class="toolbar" style="margin-bottom: 0.75rem">
+            <button type="button" class="btn btn--primary" id="btnNuevoCliente">Nuevo cliente</button>
+            <span class="toolbar-spacer"></span>
+            <button type="button" class="btn btn--ghost" id="btnRefrescarClientes">Actualizar</button>
+          </div>
+          <div id="loadingClientes" class="msg msg--info" hidden>Cargando clientes…</div>
+          <div class="table-wrap">
+            <table class="data-table" aria-label="Clientes">
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyClientes"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="cu-section card" id="sectionUnidades" hidden>
+          <h3 style="margin: 0 0 0.35rem; font-size: 1.05rem">Unidades del cliente</h3>
+          <p id="unidadesClienteNombre" style="margin: 0 0 0.75rem; color: var(--color-text-muted); font-size: 0.9rem"></p>
+          <div class="toolbar" style="margin-bottom: 0.75rem">
+            <button type="button" class="btn btn--primary" id="btnNuevaUnidad" disabled>Nueva unidad</button>
+            <span class="toolbar-spacer"></span>
+            <button type="button" class="btn btn--ghost" id="btnRefrescarUnidades">Actualizar unidades</button>
+          </div>
+          <div id="loadingUnidades" class="msg msg--info" hidden>Cargando unidades…</div>
+          <div class="table-wrap">
+            <table class="data-table" aria-label="Unidades">
+              <thead>
+                <tr>
+                  <th>Unidad</th>
+                  <th>Supervisor</th>
+                  <th>Rondas / mes</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyUnidades"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <dialog id="dlgCliente" class="modal" aria-labelledby="dlgClienteTitle">
+      <div class="modal__header">
+        <h3 id="dlgClienteTitle">Nuevo cliente</h3>
+      </div>
+      <form id="formCliente" method="dialog">
+        <div class="modal__body">
+          <div id="dlgClienteMsg" class="msg msg--error" role="alert" hidden></div>
+          <div class="field">
+            <label for="fClienteNombre">Cliente</label>
+            <input class="input" id="fClienteNombre" type="text" required autocomplete="organization" />
+          </div>
+          <div class="field">
+            <label for="fClienteEstado">Estado</label>
+            <select class="input" id="fClienteEstado" required>
+              <option value="activo">Activo</option>
+              <option value="inactivo">Inactivo</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--ghost" id="btnDlgClienteCancelar">Cancelar</button>
+          <button type="submit" class="btn btn--primary" id="btnDlgClienteGuardar">
+            <span id="btnDlgClienteLabel">Guardar</span>
+            <span id="btnDlgClienteSpinner" class="spinner" hidden aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="dlgUnidad" class="modal" aria-labelledby="dlgUnidadTitle">
+      <div class="modal__header">
+        <h3 id="dlgUnidadTitle">Nueva unidad</h3>
+      </div>
+      <form id="formUnidad" method="dialog">
+        <div class="modal__body">
+          <div id="dlgUnidadMsg" class="msg msg--error" role="alert" hidden></div>
+          <p id="dlgUnidadCliente" style="margin: 0 0 1rem; font-size: 0.9rem; color: var(--color-text-muted)"></p>
+          <div class="field">
+            <label for="fUnidadNombre">Unidad</label>
+            <input class="input" id="fUnidadNombre" type="text" required />
+          </div>
+          <div class="field">
+            <label for="fUnidadSupervisor">Supervisor asignado</label>
+            <select class="input" id="fUnidadSupervisor" required></select>
+          </div>
+          <div class="field">
+            <label for="fUnidadRondas">Cantidad de rondas mensuales</label>
+            <input class="input" id="fUnidadRondas" type="number" min="0" step="1" value="0" required />
+          </div>
+        </div>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--ghost" id="btnDlgUnidadCancelar">Cancelar</button>
+          <button type="submit" class="btn btn--primary" id="btnDlgUnidadGuardar">
+            <span id="btnDlgUnidadLabel">Guardar</span>
+            <span id="btnDlgUnidadSpinner" class="spinner" hidden aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/clientes-unidades.js"></script>
+  </body>
+</html>

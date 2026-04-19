@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>KPIs</title>
+    <link rel="stylesheet" href="../common.css" />
+  </head>
+  <body>
+    <div class="page-inner">
+      <h2>KPIs</h2>
+      <p>
+        Registre indicadores con <strong>meta mensual</strong> y <strong>logro</strong> por <strong>mes y año</strong>. Los KPIs aparecen como tarjetas en el
+        <strong>Dashboard</strong> cuando el periodo filtrado incluye ese mes.
+      </p>
+
+      <div id="blockNoAdmin" class="card" hidden>
+        <p style="margin: 0">Solo administradores pueden gestionar KPIs.</p>
+      </div>
+
+      <div id="blockAdmin" hidden>
+        <div id="msg" class="msg msg--error" role="alert" hidden></div>
+
+        <section class="card kpis-form-card" style="margin-bottom: 1rem">
+          <h3 class="kpis-section-title">Nuevo KPI</h3>
+          <form id="formKpi" class="kpis-form-grid">
+            <div class="field" style="margin-bottom: 0">
+              <label for="fNombre">Nombre del KPI</label>
+              <input class="input" id="fNombre" type="text" required maxlength="120" placeholder="Ej. Visitas comerciales" />
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label for="fMeta">Meta mensual</label>
+              <input class="input" id="fMeta" type="number" min="0" step="any" required inputmode="decimal" />
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label for="fLogro">Logro</label>
+              <input class="input" id="fLogro" type="number" min="0" step="any" required inputmode="decimal" />
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label for="fMes">Mes que registra</label>
+              <select class="input" id="fMes" required></select>
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label for="fAnio">Año</label>
+              <select class="input" id="fAnio" required></select>
+            </div>
+            <div class="field kpis-form-actions" style="margin-bottom: 0">
+              <button type="submit" class="btn btn--primary" id="btnGuardarKpi" style="margin-top: 1.35rem; width: 100%">
+                <span id="btnKpiLabel">Guardar KPI</span>
+                <span id="btnKpiSpinner" class="spinner" hidden aria-hidden="true"></span>
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <div class="toolbar">
+          <label class="kpis-toolbar-label" for="filtAnio">Listado — Año</label>
+          <select class="input input--compact" id="filtAnio" style="max-width: 7rem"></select>
+          <label class="kpis-toolbar-label" for="filtMes">Mes</label>
+          <select class="input input--compact" id="filtMes" style="max-width: 9rem"></select>
+          <span class="toolbar-spacer"></span>
+          <button type="button" class="btn btn--ghost" id="btnRefrescar">Actualizar lista</button>
+        </div>
+
+        <div id="loading" class="msg msg--info" hidden>Cargando…</div>
+
+        <div class="table-wrap">
+          <table class="data-table" aria-label="KPIs registrados">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Periodo</th>
+                <th>Meta</th>
+                <th>Logro</th>
+                <th>% meta</th>
+                <th>Usuario</th>
+                <th>Fecha registro</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyKpis"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/kpis.js"></script>
+  </body>
+</html>

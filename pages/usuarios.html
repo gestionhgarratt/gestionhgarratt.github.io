@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Usuarios</title>
+    <link rel="stylesheet" href="../common.css" />
+  </head>
+  <body>
+    <div class="page-inner">
+      <h2>Usuarios</h2>
+      <p>Alta de usuarios en la hoja <strong>usuarios</strong> (usuario, contraseña, cargo, nombres, primer login).</p>
+
+      <div id="blockNoAdmin" class="card" hidden>
+        <p style="margin: 0">No tienes permiso para gestionar usuarios.</p>
+      </div>
+
+      <div id="blockAdmin">
+        <div id="msg" class="msg msg--error" role="alert" hidden></div>
+
+        <div class="toolbar">
+          <button type="button" class="btn btn--primary" id="btnNuevo">Nuevo usuario</button>
+          <span class="toolbar-spacer"></span>
+          <button type="button" class="btn btn--ghost" id="btnRefrescar">Actualizar lista</button>
+        </div>
+
+        <div id="loading" class="msg msg--info" hidden>Cargando…</div>
+
+        <div class="table-wrap">
+          <table class="data-table" aria-label="Listado de usuarios">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Cargo</th>
+                <th>Nombres</th>
+                <th>Primer login</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <dialog id="dlg" class="modal" aria-labelledby="dlgTitle">
+      <div class="modal__header">
+        <h3 id="dlgTitle">Nuevo usuario</h3>
+      </div>
+      <form id="formNuevo" method="dialog">
+        <div class="modal__body">
+          <div id="dlgMsg" class="msg msg--error" role="alert" hidden></div>
+          <div class="field">
+            <label for="fUsuario">Usuario</label>
+            <input class="input" id="fUsuario" name="usuario" type="text" autocomplete="off" required />
+          </div>
+          <div class="field">
+            <label for="fPassword">Contraseña</label>
+            <input class="input" id="fPassword" name="password" type="password" autocomplete="new-password" required />
+          </div>
+          <div class="field">
+            <label for="fCargo">Cargo</label>
+            <select class="input" id="fCargo" name="cargo" required>
+              <option value="administrador">Administrador</option>
+              <option value="supervisor">Supervisor</option>
+              <option value="gerencia">Gerencia</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="fNombres">Nombres</label>
+            <input class="input" id="fNombres" name="nombres" type="text" autocomplete="name" required />
+          </div>
+          <div class="field">
+            <label for="fPrimerlogin">Primer login</label>
+            <input class="input" id="fPrimerlogin" name="primerlogin" type="text" placeholder="Opcional (ej. vacío o NO)" />
+          </div>
+        </div>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--ghost" id="btnDlgCancelar">Cancelar</button>
+          <button type="submit" class="btn btn--primary" id="btnDlgGuardar">
+            <span id="btnDlgLabel">Guardar</span>
+            <span id="btnDlgSpinner" class="spinner" hidden aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/usuarios.js"></script>
+  </body>
+</html>

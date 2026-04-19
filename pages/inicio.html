@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Inicio</title>
+    <link rel="stylesheet" href="../common.css" />
+  </head>
+  <body>
+    <div class="page-inner sup-inicio">
+      <div id="blockNoSupervisor" class="card" hidden>
+        <p style="margin: 0">Esta pantalla es solo para supervisores.</p>
+      </div>
+
+      <div id="blockSupervisor" hidden>
+        <h2 class="sup-inicio__title">Mis unidades</h2>
+        <p id="supPeriodo" class="sup-inicio__periodo"></p>
+        <div id="msg" class="msg msg--error" role="alert" hidden></div>
+        <div id="loading" class="msg msg--info" hidden>Cargando resumen…</div>
+        <div id="listaUnidades" class="sup-inicio__lista"></div>
+      </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/inicio.js"></script>
+  </body>
+</html>
