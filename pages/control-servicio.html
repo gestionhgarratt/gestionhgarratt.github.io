@@ -41,8 +41,9 @@
               <select class="input" id="selAnio"></select>
             </div>
             <div class="field" style="margin-bottom: 0">
-              <label for="inpPersonal">Cantidad de personal</label>
-              <input class="input" id="inpPersonal" type="number" min="0" step="1" inputmode="numeric" placeholder="0" />
+              <label for="btnPlanPersonal">Cantidad de personal esperada</label>
+              <button type="button" class="btn btn--ghost" id="btnPlanPersonal" style="width: 100%">Configurar por turnos</button>
+              <small id="planPersonalResumen" style="display: block; margin-top: 0.35rem; color: var(--color-text-muted)">Sin configuración de turnos.</small>
             </div>
             <div class="field kpis-form-actions" style="margin-bottom: 0">
               <button type="button" class="btn btn--primary" id="btnCargar" style="margin-top: 1.35rem; width: 100%">Cargar cuadrícula</button>
@@ -66,6 +67,24 @@
         </div>
       </div>
     </div>
+
+    <dialog id="dlgPlanPersonal" class="modal modal--wide" aria-labelledby="dlgPlanPersonalTitle">
+      <div class="modal__header">
+        <h3 id="dlgPlanPersonalTitle">Personal esperado por turno y día</h3>
+      </div>
+      <div class="modal__body">
+        <p style="margin-top: 0">
+          Ingrese cuántas personas deben asistir por turno para cada día de la semana.
+        </p>
+        <div class="table-wrap">
+          <table class="data-table" id="tblPlanPersonal" aria-label="Plan esperado semanal"></table>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button type="button" class="btn btn--ghost" id="btnPlanCancelar">Cancelar</button>
+        <button type="button" class="btn btn--primary" id="btnPlanGuardar">Guardar plan</button>
+      </div>
+    </dialog>
     <script src="../js/config.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/api.js"></script>
