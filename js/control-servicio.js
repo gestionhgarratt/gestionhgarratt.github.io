@@ -17,13 +17,18 @@
   var selUnidad = document.getElementById("selUnidad");
   var selMes = document.getElementById("selMes");
   var selAnio = document.getElementById("selAnio");
-  var inpPersonal = document.getElementById("inpPersonal");
+  var btnPlanPersonal = document.getElementById("btnPlanPersonal");
+  var planPersonalResumen = document.getElementById("planPersonalResumen");
   var btnCargar = document.getElementById("btnCargar");
   var wrapGrid = document.getElementById("wrapGrid");
   var tblGrid = document.getElementById("tblGrid");
   var btnGuardar = document.getElementById("btnGuardar");
   var btnGuardarLabel = document.getElementById("btnGuardarLabel");
   var btnGuardarSpinner = document.getElementById("btnGuardarSpinner");
+  var dlgPlanPersonal = document.getElementById("dlgPlanPersonal");
+  var tblPlanPersonal = document.getElementById("tblPlanPersonal");
+  var btnPlanCancelar = document.getElementById("btnPlanCancelar");
+  var btnPlanGuardar = document.getElementById("btnPlanGuardar");
 
   if (!window.AppAuth.isAdmin(session)) {
     blockNoAdmin.hidden = false;
@@ -32,8 +37,10 @@
 
   blockAdmin.hidden = false;
 
-  var TIPOS = ["faltas", "suspensiones", "permisos", "vacaciones", "descanso_medico", "bajas"];
+  var TIPOS = ["asistencias_dia", "asistencias_noche", "faltas", "suspensiones", "permisos", "vacaciones", "descanso_medico", "bajas"];
   var LABELS = {
+    asistencias_dia: "Asistencias día",
+    asistencias_noche: "Asistencias noche",
     faltas: "Faltas",
     suspensiones: "Suspensiones",
     permisos: "Permisos",
@@ -58,8 +65,113 @@
   ];
 
   var diasSemana = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+  var diasSemanaPlan = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
   var stateDias = 0;
+  var statePlanPersonal = makeDefaultPlanPersonal();
+
+  function makeDefaultPlanPersonal() {
+    return {
+      dia: [0, 0, 0, 0, 0, 0, 0],
+      noche: [0, 0, 0, 0, 0, 0, 0],
+    };
+  }
+
+  function normalizePlanPersonal(src) {
+    var out = makeDefaultPlanPersonal();
+    if (!src || typeof src !== "object") {
+      return out;
+    }
+    ["dia", "noche"].forEach(function (turno) {
+      var inArr = src[turno];
+      if (!inArr || !(inArr instanceof Array)) {
+        return;
+      }
+      for (var i = 0; i < 7; i++) {
+        var n = Number(inArr[i]);
+        if (isNaN(n) || n < 0) {
+          n = 0;
+        }
+        out[turno][i] = Math.round(n);
+      }
+    });
+    return out;
+  }
+
+  function buildPlanTable() {
+    tblPlanPersonal.innerHTML = "";
+    var thead = document.createElement("thead");
+    var trh = document.createElement("tr");
+    var th0 = document.createElement("th");
+    th0.textContent = "Turno";
+    trh.appendChild(th0);
+    diasSemanaPlan.forEach(function (d) {
+      var th = document.createElement("th");
+      th.textContent = d;
+      trh.appendChild(th);
+    });
+    thead.appendChild(trh);
+    tblPlanPersonal.appendChild(thead);
+
+    var tbody = document.createElement("tbody");
+    [
+      { key: "dia", label: "Día" },
+      { key: "noche", label: "Noche" },
+    ].forEach(function (turno) {
+      var tr = document.createElement("tr");
+      var tdLbl = document.createElement("td");
+      tdLbl.style.fontWeight = "600";
+      tdLbl.textContent = turno.label;
+      tr.appendChild(tdLbl);
+      for (var i = 0; i < 7; i++) {
+        var td = document.createElement("td");
+        td.style.padding = "0.25rem";
+        var inp = document.createElement("input");
+        inp.type = "number";
+        inp.min = "0";
+        inp.step = "1";
+        inp.className = "input";
+        inp.style.width = "4.2rem";
+        inp.style.padding = "0.25rem 0.35rem";
+        inp.setAttribute("data-turno", turno.key);
+        inp.setAttribute("data-dow", String(i));
+        inp.value = String(statePlanPersonal[turno.key][i] || 0);
+        td.appendChild(inp);
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    });
+    tblPlanPersonal.appendChild(tbody);
+  }
+
+  function readPlanTable() {
+    var out = makeDefaultPlanPersonal();
+    ["dia", "noche"].forEach(function (turno) {
+      for (var i = 0; i < 7; i++) {
+        var inp = tblPlanPersonal.querySelector('input[data-turno="' + turno + '"][data-dow="' + i + '"]');
+        var n = inp ? Number(String(inp.value).replace(",", ".")) : 0;
+        if (isNaN(n) || n < 0) {
+          n = 0;
+        }
+        out[turno][i] = Math.round(n);
+      }
+    });
+    return out;
+  }
+
+  function renderPlanResumen() {
+    var sumDia = 0;
+    var sumNoche = 0;
+    for (var i = 0; i < 7; i++) {
+      sumDia += Number(statePlanPersonal.dia[i]) || 0;
+      sumNoche += Number(statePlanPersonal.noche[i]) || 0;
+    }
+    planPersonalResumen.textContent =
+      "Turno día (semana): " +
+      sumDia +
+      " · Turno noche (semana): " +
+      sumNoche;
+  }
 
   function showMsg(text, kind) {
     msg.textContent = text;
@@ -105,10 +217,11 @@
     return dia + "<br><small>" + diasSemana[dt.getDay()] + "</small>";
   }
 
-  function buildGrid(dMax, detalle, cantidadPersonal) {
+  function buildGrid(dMax, detalle, planPersonal) {
     tblGrid.innerHTML = "";
     stateDias = dMax;
-    inpPersonal.value = cantidadPersonal != null ? String(cantidadPersonal) : "0";
+    statePlanPersonal = normalizePlanPersonal(planPersonal);
+    renderPlanResumen();
 
     var thead = document.createElement("thead");
     var trh = document.createElement("tr");
@@ -130,8 +243,11 @@
     tblGrid.appendChild(thead);
 
     var tbody = document.createElement("tbody");
-    TIPOS.forEach(function (tipo) {
+    TIPOS.forEach(function (tipo, idxTipo) {
       var tr = document.createElement("tr");
+      if (idxTipo === 1) {
+        tr.className = "control-srv-row-divider";
+      }
       var tdL = document.createElement("td");
       tdL.textContent = LABELS[tipo] || tipo;
       tdL.style.fontWeight = "600";
@@ -254,7 +370,7 @@
         return;
       }
       var d = res.data.dias_en_mes || 31;
-      buildGrid(d, res.data.detalle, res.data.cantidad_personal);
+      buildGrid(d, res.data.detalle, res.data.plan_personal);
       wrapGrid.hidden = false;
     } catch (e) {
       showMsg("Error de red al cargar.");
@@ -302,6 +418,29 @@
 
   btnCargar.addEventListener("click", cargarPeriodo);
 
+  btnPlanPersonal.addEventListener("click", function () {
+    if (!dlgPlanPersonal || !dlgPlanPersonal.showModal) {
+      showMsg("Este navegador no soporta el modal de configuración.");
+      return;
+    }
+    buildPlanTable();
+    dlgPlanPersonal.showModal();
+  });
+
+  btnPlanCancelar.addEventListener("click", function () {
+    if (dlgPlanPersonal && dlgPlanPersonal.open) {
+      dlgPlanPersonal.close();
+    }
+  });
+
+  btnPlanGuardar.addEventListener("click", function () {
+    statePlanPersonal = readPlanTable();
+    renderPlanResumen();
+    if (dlgPlanPersonal && dlgPlanPersonal.open) {
+      dlgPlanPersonal.close();
+    }
+  });
+
   btnGuardar.addEventListener("click", async function () {
     hideMsg();
     if (!idsClienteUnidadOk()) {
@@ -310,11 +449,6 @@
     }
     if (!stateDias) {
       showMsg("Cargue la cuadrícula (mes y año) antes de guardar.");
-      return;
-    }
-    var cant = parseInt(String(inpPersonal.value).trim(), 10);
-    if (isNaN(cant) || cant < 0) {
-      showMsg("La cantidad de personal debe ser un número entero mayor o igual a 0.");
       return;
     }
     var detalle = collectDetalle();
@@ -330,7 +464,7 @@
           id_unidad: selUnidad.value,
           anio: anio,
           mes: mes,
-          cantidad_personal: cant,
+          plan_personal: statePlanPersonal,
           detalle: detalle,
         },
         "getPendingResult",
