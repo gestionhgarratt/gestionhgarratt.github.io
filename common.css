@@ -1565,6 +1565,11 @@ img {
   max-width: 42rem;
 }
 
+.control-srv-row-divider td {
+  border-bottom: 2px dashed rgba(139, 156, 179, 0.45) !important;
+  padding-bottom: 0.45rem;
+}
+
 /* Inicio supervisor */
 .sup-inicio__title {
   margin: 0 0 0.35rem;
