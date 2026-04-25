@@ -1,4 +1,4 @@
-/**
+**
  * Control de servicio — cuadrícula por día, por cliente y unidad (solo administrador).
  */
 (function () {
