@@ -26,8 +26,6 @@
   var dashFiltersShell = document.getElementById("dashFiltersShell");
   var btnToggleFilters = document.getElementById("btnToggleFilters");
 
-  var charts = {};
-
   if (!window.AppAuth.isDashboardViewer(session)) {
     blockNoAdmin.hidden = false;
     return;
@@ -77,76 +75,31 @@
     loading.hidden = !on;
   }
 
-  function destroyChart(key) {
-    if (charts[key]) {
-      charts[key].destroy();
-      charts[key] = null;
-    }
-  }
-
-  /** Velocímetro SVG: 0–150 % (realizadas / esperadas). */
-  function renderGaugeRondas(espVal, realVal) {
-    var needle = document.getElementById("gaugeNeedle");
-    var pctEl = document.getElementById("gaugeRondasPct");
-    var subEl = document.getElementById("gaugeRondasSub");
-    var root = document.getElementById("gaugeRondasRoot");
-    if (!needle || !pctEl || !subEl) {
+  function setMiniBar(id, pct) {
+    var el = document.getElementById(id);
+    if (!el) {
       return;
     }
-    var cx = 110;
-    var cy = 88;
-    var L = 62;
-    var esp = typeof espVal === "number" && !isNaN(espVal) ? espVal : 0;
-    var real = typeof realVal === "number" && !isNaN(realVal) ? realVal : 0;
-    var pctRaw = esp > 0 ? (real / esp) * 100 : 0;
-    var needlePct;
-    if (esp <= 0) {
-      needlePct = real > 0 ? 150 : 0;
-    } else {
-      needlePct = Math.min(150, Math.max(0, pctRaw));
-    }
+    var v = typeof pct === "number" && !isNaN(pct) ? pct : 0;
+    v = Math.min(100, Math.max(0, v));
+    el.style.width = v + "%";
+  }
 
-    var theta = Math.PI * (1 - needlePct / 150);
-    var x2 = cx + L * Math.cos(theta);
-    var y2 = cy - L * Math.sin(theta);
-    needle.setAttribute("x2", String(x2));
-    needle.setAttribute("y2", String(y2));
-
-    if (esp <= 0) {
-      pctEl.textContent = real > 0 ? "Sin meta" : "0%";
-      subEl.textContent =
-        real > 0
-          ? String(real) + " realizadas · asigne rondas mensuales en unidades"
-          : "0 realizadas · sin rondas esperadas en el periodo";
-    } else {
-      pctEl.textContent = (Math.round(pctRaw * 10) / 10) + "%";
-      subEl.textContent =
-        (Number.isInteger(real) ? real : Math.round(real * 10) / 10) +
-        " / " +
-        (Number.isInteger(esp) ? esp : Math.round(esp * 10) / 10) +
-        " rondas";
-    }
-
-    if (root) {
-      var desc =
-        esp > 0
-          ? "Velocímetro de rondas: " +
-            (Math.round(pctRaw * 10) / 10) +
-            " por ciento. " +
-            real +
-            " supervisiones de " +
-            esp +
-            " rondas esperadas."
-          : "Velocímetro de rondas: sin rondas esperadas definidas para comparar.";
-      root.setAttribute("aria-label", desc);
-    }
+  function setMiniIncidentes(pn) {
+    var bajo = pn && pn.bajo ? pn.bajo : 0;
+    var medio = pn && pn.medio ? pn.medio : 0;
+    var alto = pn && pn.alto ? pn.alto : 0;
+    var total = bajo + medio + alto;
+    setMiniBar("kpiIncMiniBajo", total > 0 ? (bajo / total) * 100 : 0);
+    setMiniBar("kpiIncMiniMedio", total > 0 ? (medio / total) * 100 : 0);
+    setMiniBar("kpiIncMiniAlto", total > 0 ? (alto / total) * 100 : 0);
   }
 
   function fmtPct(p) {
     if (p === null || p === undefined || typeof p !== "number" || isNaN(p)) {
       return "—";
     }
-    return p + "%";
+    return p.toFixed(2) + "%";
   }
 
   function fmtNum(n, dec) {
@@ -284,7 +237,8 @@
 
   function renderKpis(data) {
     var c = data.cumplimiento && data.cumplimiento.global;
-    document.getElementById("kpiCumplPct").textContent = fmtPct(c && c.pct);
+    var pctCumpl = c && c.pct;
+    document.getElementById("kpiCumplPct").textContent = fmtPct(pctCumpl);
     document.getElementById("kpiCumplDetalle").textContent =
       c && c.rondas_esperadas != null
         ? "Realizadas: " +
@@ -292,45 +246,15 @@
           " · Esperadas (periodo): " +
           fmtNum(c.rondas_esperadas, 2)
         : "";
+    setMiniBar("kpiCumplMini", pctCumpl);
 
-    var sp = data.supervision_promedios;
     document.getElementById("kpiSupCount").textContent =
-      sp && sp.registros_con_datos != null ? String(sp.registros_con_datos) : "—";
+      c && c.supervisiones_realizadas != null ? String(c.supervisiones_realizadas) : "—";
     document.getElementById("kpiSupMeta").textContent =
-      data.meta && data.meta.unidades_en_scope != null
-        ? "Unidades en alcance del filtro: " + data.meta.unidades_en_scope
+      c && c.rondas_esperadas != null
+        ? "Esperadas en periodo: " + fmtNum(c.rondas_esperadas, 2)
         : "";
-
-    var rad = collectRadarSeries(sp);
-    var promVal = avgOfValues(rad.values);
-    document.getElementById("kpiPromVal").textContent = promVal != null ? fmtNum(promVal, 2) : "—";
-
-    var cs = sp && sp.carnet_sucamec;
-    var ctot = cs ? (cs.cumple || 0) + (cs.no_cumple || 0) : 0;
-    var cpct =
-      ctot > 0 ? Math.round(((cs.cumple || 0) / ctot) * 1000) / 10 : null;
-    document.getElementById("kpiCarnetPct").textContent = fmtPct(cpct);
-    document.getElementById("kpiCarnetDetalle").textContent = cs
-      ? "Cumple: " +
-        (cs.cumple || 0) +
-        " · No cumple: " +
-        (cs.no_cumple || 0) +
-        (cs.otros_o_vacio ? " · Otros/vacío: " + cs.otros_o_vacio : "")
-      : "";
-
-    var l4 = sp && sp.documentacion && sp.documentacion.licencia_l4;
-    var l4dec = l4 ? (l4.cumple || 0) + (l4.no_cumple || 0) : 0;
-    var l4pct =
-      l4dec > 0 ? Math.round(((l4.cumple || 0) / l4dec) * 1000) / 10 : null;
-    document.getElementById("kpiL4Pct").textContent = fmtPct(l4pct);
-    document.getElementById("kpiL4Detalle").textContent = l4
-      ? "Cumple: " +
-        (l4.cumple || 0) +
-        " · No cumple: " +
-        (l4.no_cumple || 0) +
-        " · N/A o vacío: " +
-        (l4.no_aplica_o_vacio || 0)
-      : "";
+    setMiniBar("kpiSupMini", pctCumpl);
 
     var inc = data.incidentes;
     document.getElementById("kpiIncCount").textContent =
@@ -339,6 +263,7 @@
     document.getElementById("kpiIncNivel").textContent = pn
       ? "Alto: " + (pn.alto || 0) + " · Medio: " + (pn.medio || 0) + " · Bajo: " + (pn.bajo || 0)
       : "";
+    setMiniIncidentes(pn);
   }
 
   var MESES_CORTO = ["", "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
@@ -346,6 +271,36 @@
   function mesCorto(m) {
     var i = parseInt(String(m), 10);
     return MESES_CORTO[i] || String(m);
+  }
+
+  function createMiniDonut(value) {
+    var wrap = document.createElement("div");
+    wrap.className = "dash-kpi-mini dash-kpi-mini--donut";
+    var v = typeof value === "number" && !isNaN(value) ? Math.min(100, Math.max(0, value)) : 0;
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 36 36");
+    var track = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    track.setAttribute("cx", "18");
+    track.setAttribute("cy", "18");
+    track.setAttribute("r", "15.5");
+    track.setAttribute("class", "mini-donut-track");
+    var ring = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    ring.setAttribute("cx", "18");
+    ring.setAttribute("cy", "18");
+    ring.setAttribute("r", "15.5");
+    ring.setAttribute("class", "mini-donut-ring");
+    var circ = 2 * Math.PI * 15.5;
+    ring.setAttribute("stroke-dasharray", String(circ));
+    ring.setAttribute("stroke-dashoffset", String(circ * (1 - v / 100)));
+    svg.appendChild(track);
+    svg.appendChild(ring);
+    wrap.appendChild(svg);
+    return wrap;
+  }
+
+  function createMiniViz(k) {
+    var pct = k && typeof k.pct_vs_meta === "number" && !isNaN(k.pct_vs_meta) ? k.pct_vs_meta : 0;
+    return createMiniDonut(pct);
   }
 
   function renderKpisTarjetas(data) {
@@ -366,6 +321,10 @@
     list.forEach(function (k) {
       var art = document.createElement("article");
       art.className = "dash-card dash-card--kpi dash-kpi-card";
+      var idKpi = String((k && k.id_kpi) || "").toLowerCase();
+      if (idKpi === "cs_cobertura_dia" || idKpi === "cs_cobertura_noche") {
+        art.classList.add("dash-kpi-card--coverage-highlight");
+      }
       var pct = k.pct_vs_meta;
       var pctStr = fmtPct(pct);
       var barVal = k.bar_pct;
@@ -374,6 +333,12 @@
       }
       var h3 = document.createElement("h3");
       h3.textContent = k.nombre || "KPI";
+      var main = document.createElement("div");
+      main.className = "dash-kpi-card__main";
+      var left = document.createElement("div");
+      left.className = "dash-kpi-card__left";
+      var right = document.createElement("div");
+      right.className = "dash-kpi-card__right";
       var metric = document.createElement("div");
       metric.className = "metric";
       metric.textContent = pctStr;
@@ -401,10 +366,14 @@
           "</strong><br/>" +
           escapeHtml(mesCorto(k.mes) + " " + (k.anio != null ? k.anio : ""));
       }
+      left.appendChild(metric);
+      left.appendChild(note);
+      right.appendChild(createMiniViz(k));
+      main.appendChild(left);
+      main.appendChild(right);
       art.appendChild(h3);
-      art.appendChild(metric);
+      art.appendChild(main);
       art.appendChild(barWrap);
-      art.appendChild(note);
       wrap.appendChild(art);
     });
   }
@@ -441,33 +410,15 @@
       .replace(/"/g, "&quot;");
   }
 
-  var chartDefaultsApplied = false;
-
-  function chartDefaults() {
-    if (typeof Chart === "undefined") {
-      return;
-    }
-    Chart.defaults.color = "#9aaabe";
-    Chart.defaults.borderColor = "rgba(45, 58, 79, 0.85)";
-    Chart.defaults.font.family = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
-    Chart.defaults.font.size = 12;
-    Chart.defaults.animation = { duration: 900 };
-    if (chartDefaultsApplied) {
-      return;
-    }
-    chartDefaultsApplied = true;
-  }
-
-  function chartGridColor() {
-    return "rgba(255, 255, 255, 0.06)";
-  }
-
   function renderCharts(data) {
+    // Este dashboard puede operar solo con tarjetas KPI.
+    // Si no hay Chart.js o no existen canvases de gráficos, no mostramos error.
     if (typeof Chart === "undefined") {
-      showMsg("No se cargó la librería de gráficos.", "error");
       return;
     }
-    chartDefaults();
+    if (!document.getElementById("chartCumplimiento")) {
+      return;
+    }
 
     var cumpl = (data.cumplimiento && data.cumplimiento.por_unidad) || [];
     var labelsU = cumpl.map(function (u) {
@@ -479,7 +430,7 @@
       return u.pct_cumplimiento != null ? u.pct_cumplimiento : 0;
     });
 
-    destroyChart("cumpl");
+    if (charts.cumpl) charts.cumpl.destroy();
     var nU = labelsU.length;
     charts.cumpl = new Chart(document.getElementById("chartCumplimiento"), {
       type: "line",
@@ -536,12 +487,11 @@
     var g = data.cumplimiento && data.cumplimiento.global;
     var espVal = g && g.rondas_esperadas != null ? g.rondas_esperadas : 0;
     var realVal = g && g.supervisiones_realizadas != null ? g.supervisiones_realizadas : 0;
-    destroyChart("rondas");
     renderGaugeRondas(espVal, realVal);
 
     var sp = data.supervision_promedios;
     var rad = collectRadarSeries(sp);
-    destroyChart("radar");
+    if (charts.radar) charts.radar.destroy();
     var canvasRadar = document.getElementById("chartRadar");
     if (rad.labels.length) {
       charts.radar = new Chart(canvasRadar, {
@@ -570,10 +520,7 @@
             r: {
               min: 1,
               max: 5,
-              ticks: {
-                stepSize: 1,
-                color: "#8b9cb3",
-              },
+              ticks: { stepSize: 1, color: "#8b9cb3" },
               grid: { color: chartGridColor() },
               angleLines: { color: "rgba(61, 139, 253, 0.2)" },
               pointLabels: { font: { size: 11, weight: 500 }, color: "#b4c0d4" },
@@ -583,13 +530,11 @@
       });
     } else if (canvasRadar && canvasRadar.getContext) {
       var crx = canvasRadar.getContext("2d");
-      if (crx) {
-        crx.clearRect(0, 0, canvasRadar.width, canvasRadar.height);
-      }
+      if (crx) crx.clearRect(0, 0, canvasRadar.width, canvasRadar.height);
     }
 
     var cs = sp && sp.carnet_sucamec;
-    destroyChart("carnet");
+    if (charts.carnet) charts.carnet.destroy();
     charts.carnet = new Chart(document.getElementById("chartCarnet"), {
       type: "doughnut",
       data: {
@@ -608,14 +553,12 @@
         responsive: true,
         maintainAspectRatio: false,
         cutout: "58%",
-        plugins: {
-          legend: { position: "bottom" },
-        },
+        plugins: { legend: { position: "bottom" } },
       },
     });
 
     var pn = (data.incidentes && data.incidentes.por_nivel) || {};
-    destroyChart("incNivel");
+    if (charts.incNivel) charts.incNivel.destroy();
     charts.incNivel = new Chart(document.getElementById("chartIncNivel"), {
       type: "bar",
       data: {
@@ -636,10 +579,7 @@
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          x: {
-            border: { display: false },
-            grid: { display: false },
-          },
+          x: { border: { display: false }, grid: { display: false } },
           y: {
             beginAtZero: true,
             border: { display: false },
@@ -655,7 +595,7 @@
     });
 
     var pt = (data.incidentes && data.incidentes.por_tipo) || {};
-    destroyChart("incTipo");
+    if (charts.incTipo) charts.incTipo.destroy();
     charts.incTipo = new Chart(document.getElementById("chartIncTipo"), {
       type: "bar",
       data: {
@@ -676,10 +616,7 @@
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          x: {
-            border: { display: false },
-            grid: { display: false },
-          },
+          x: { border: { display: false }, grid: { display: false } },
           y: {
             beginAtZero: true,
             border: { display: false },
