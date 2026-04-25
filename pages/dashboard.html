@@ -10,6 +10,11 @@
     <div class="page-inner dash-page">
       <header class="dash-hero">
         <div class="dash-hero__main">
+          <img
+            class="dash-brand-logo"
+            src="https://res.cloudinary.com/drunurx3a/image/upload/v1767735454/paestextil/products/r9n4oib5wmaby9vsq3yh.png"
+            alt="Logo CASEVIP"
+          />
           <p class="dash-hero__eyebrow">Inteligencia operativa</p>
           <h2 class="dash-title">Panel ejecutivo</h2>
           <p class="dash-subtitle">
@@ -112,36 +117,28 @@
         <p id="dashPeriodo" class="dash-periodo dash-periodo--compact" aria-live="polite"></p>
         <div id="loading" class="msg msg--info" hidden>Cargando datos…</div>
 
-        <section class="dash-kpis" aria-label="Indicadores principales">
+        <section class="dash-kpis dash-kpis--2x2" aria-label="Indicadores principales">
           <article class="dash-card dash-card--accent dash-card--kpi">
             <h3>Cumpl. rondas</h3>
             <div class="metric" id="kpiCumplPct">—</div>
             <p class="dash-card-note" id="kpiCumplDetalle"></p>
+            <div class="dash-mini-bar" aria-hidden="true"><span id="kpiCumplMini"></span></div>
           </article>
           <article class="dash-card dash-card--kpi">
             <h3>Supervisiones</h3>
             <div class="metric" id="kpiSupCount">—</div>
             <p class="dash-card-note" id="kpiSupMeta"></p>
-          </article>
-          <article class="dash-card dash-card--kpi">
-            <h3>Promedio 1–5</h3>
-            <div class="metric" id="kpiPromVal">—</div>
-            <p class="dash-card-note">Valoraciones numéricas</p>
-          </article>
-          <article class="dash-card dash-card--warn dash-card--kpi">
-            <h3>Carnet SUCAMEC</h3>
-            <div class="metric" id="kpiCarnetPct">—</div>
-            <p class="dash-card-note" id="kpiCarnetDetalle"></p>
-          </article>
-          <article class="dash-card dash-card--kpi">
-            <h3>Licencia L4</h3>
-            <div class="metric" id="kpiL4Pct">—</div>
-            <p class="dash-card-note" id="kpiL4Detalle"></p>
+            <div class="dash-mini-bar" aria-hidden="true"><span id="kpiSupMini"></span></div>
           </article>
           <article class="dash-card dash-card--kpi">
             <h3>Incidentes</h3>
             <div class="metric" id="kpiIncCount">—</div>
             <p class="dash-card-note" id="kpiIncNivel"></p>
+            <div class="dash-mini-bars-3" aria-hidden="true">
+              <span id="kpiIncMiniBajo"></span>
+              <span id="kpiIncMiniMedio"></span>
+              <span id="kpiIncMiniAlto"></span>
+            </div>
           </article>
         </section>
 
@@ -150,99 +147,8 @@
           <div id="dashKpisTarjetas" class="dash-kpis-tarjetas"></div>
         </section>
 
-        <div class="dash-grid-charts">
-          <div class="dash-chart-cell card">
-            <h3 class="dash-chart-title">Cumplimiento por unidad (%)</h3>
-            <div class="dash-chart-wrap">
-              <canvas id="chartCumplimiento" aria-label="Gráfico de líneas cumplimiento por unidad"></canvas>
-            </div>
-          </div>
-          <div class="dash-chart-cell card">
-            <h3 class="dash-chart-title">Rondas: meta vs realizadas</h3>
-            <div class="dash-chart-wrap dash-chart-wrap--gauge">
-              <div id="gaugeRondasRoot" class="dash-gauge" role="img" aria-label="Velocímetro de cumplimiento de rondas">
-                <div class="dash-gauge__stage">
-                  <svg
-                    class="dash-gauge__svg"
-                    viewBox="0 0 220 102"
-                    preserveAspectRatio="xMidYMid meet"
-                    aria-hidden="true"
-                    focusable="false"
-                  >
-                    <defs>
-                      <linearGradient id="dashGaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#ff453a" />
-                        <stop offset="40%" stop-color="#ffc107" />
-                        <stop offset="100%" stop-color="#34c759" />
-                      </linearGradient>
-                    </defs>
-                    <!-- sweep=1: semicírculo superior (arco “sonrisa” hacia arriba). sweep=0 dibujaba el inferior y se veía mal. -->
-                    <path
-                      class="dash-gauge__track"
-                      d="M 40 88 A 70 70 0 0 1 180 88"
-                      fill="none"
-                      stroke="url(#dashGaugeGrad)"
-                      stroke-width="10"
-                      stroke-linecap="round"
-                      opacity="0.9"
-                    />
-                    <line
-                      id="gaugeNeedle"
-                      class="dash-gauge__needle"
-                      x1="110"
-                      y1="88"
-                      x2="40"
-                      y2="88"
-                      stroke="#f0f4fa"
-                      stroke-width="2.5"
-                      stroke-linecap="round"
-                    />
-                    <circle class="dash-gauge__pivot" cx="110" cy="88" r="5" fill="#1a2332" stroke="#3d8bfd" stroke-width="1.5" />
-                    <text class="dash-gauge__tick dash-gauge__tick--edge" x="40" y="100" text-anchor="middle">0%</text>
-                    <text class="dash-gauge__tick dash-gauge__tick--top" x="110" y="15" text-anchor="middle">75%</text>
-                    <text class="dash-gauge__tick dash-gauge__tick--edge" x="180" y="100" text-anchor="middle">150%</text>
-                  </svg>
-                  <div class="dash-gauge__readout dash-gauge__readout--overlay">
-                    <span id="gaugeRondasPct" class="dash-gauge__pct">—</span>
-                    <span id="gaugeRondasSub" class="dash-gauge__sub"></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="dash-chart-cell card">
-            <h3 class="dash-chart-title">Promedio por dimensión (1–5)</h3>
-            <div class="dash-chart-wrap">
-              <canvas id="chartRadar" aria-label="Gráfico radar promedios"></canvas>
-            </div>
-          </div>
-          <div class="dash-chart-cell card">
-            <h3 class="dash-chart-title">Carnet SUCAMEC</h3>
-            <div class="dash-chart-wrap">
-              <canvas id="chartCarnet" aria-label="Gráfico dona carnet"></canvas>
-            </div>
-          </div>
-          <div class="dash-chart-cell card">
-            <h3 class="dash-chart-title">Incidentes por nivel de riesgo</h3>
-            <div class="dash-chart-wrap">
-              <canvas id="chartIncNivel" aria-label="Gráfico barras nivel riesgo"></canvas>
-            </div>
-          </div>
-          <div class="dash-chart-cell card">
-            <h3 class="dash-chart-title">Incidentes por tipo</h3>
-            <div class="dash-chart-wrap">
-              <canvas id="chartIncTipo" aria-label="Gráfico barras tipo incidente"></canvas>
-            </div>
-          </div>
-          <div class="dash-chart-cell card dash-chart-cell--wide">
-            <h3 class="dash-chart-title">Unidades con incidentes de riesgo alto</h3>
-            <div id="panelAlto" class="dash-panel-alto"></div>
-          </div>
-        </div>
       </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="../js/config.js"></script>
     <script src="../js/api.js"></script>
     <script src="../js/auth.js"></script>
