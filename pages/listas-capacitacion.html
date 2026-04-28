@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Listas de capacitación</title>
+    <link rel="stylesheet" href="../common.css" />
+  </head>
+  <body>
+    <div class="page-inner">
+      <h2>Listas de capacitación</h2>
+
+      <div id="blockNoAdmin" class="card" hidden>
+        <p style="margin: 0">Solo administradores pueden ver listas de capacitación.</p>
+      </div>
+
+      <div id="blockAdmin" hidden>
+        <div id="msg" class="msg msg--error" role="alert" hidden></div>
+
+        <section class="card" style="margin-bottom: 1rem">
+          <h3 class="kpis-section-title">Filtros</h3>
+          <div class="kpis-form-grid">
+            <div class="field" style="margin-bottom: 0">
+              <label for="fTema">Tema</label>
+              <input id="fTema" class="input" type="text" />
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label for="fDoc">Nro documento</label>
+              <input id="fDoc" class="input" type="text" />
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label for="fNom">Apellidos y nombres</label>
+              <input id="fNom" class="input" type="text" />
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label for="fCliente">Cliente</label>
+              <select id="fCliente" class="input"><option value="">Todos</option></select>
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label for="fUnidad">Unidad</label>
+              <select id="fUnidad" class="input" disabled><option value="">Todas</option></select>
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label for="fDesde">Fecha capacitación desde</label>
+              <input id="fDesde" class="input" type="date" />
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label for="fHasta">Fecha capacitación hasta</label>
+              <input id="fHasta" class="input" type="date" />
+            </div>
+            <div class="field kpis-form-actions" style="margin-bottom: 0">
+              <button type="button" class="btn btn--primary" id="btnFiltrar" style="margin-top: 1.35rem; width: 100%">Filtrar</button>
+            </div>
+          </div>
+        </section>
+
+        <div class="toolbar">
+          <span class="toolbar-spacer"></span>
+          <button type="button" class="btn btn--ghost" id="btnExportar">Descargar Excel</button>
+        </div>
+
+        <div id="loading" class="msg msg--info" hidden>Cargando…</div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Tema</th>
+                <th>Fecha capacitación</th>
+                <th>Nro documento</th>
+                <th>Apellidos y nombres</th>
+                <th>Cliente</th>
+                <th>Unidad</th>
+                <th>Fecha registro</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyReg"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/listas-capacitacion.js"></script>
+  </body>
+</html>
