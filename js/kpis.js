@@ -26,6 +26,7 @@
   var btnKpiLabel = document.getElementById("btnKpiLabel");
   var btnKpiSpinner = document.getElementById("btnKpiSpinner");
   var btnRefrescar = document.getElementById("btnRefrescar");
+  var editandoIdKpi = "";
 
   if (!window.AppAuth.isAdmin(session)) {
     blockNoAdmin.hidden = false;
@@ -100,12 +101,29 @@
     btnKpiSpinner.hidden = !on;
   }
 
+  function resetFormMode() {
+    editandoIdKpi = "";
+    btnKpiLabel.textContent = "Guardar KPI";
+    btnGuardarKpi.classList.remove("btn--danger");
+  }
+
+  function setEditMode(k) {
+    editandoIdKpi = String((k && k.id_kpi) || "");
+    fNombre.value = k && k.nombre != null ? String(k.nombre) : "";
+    fMeta.value = k && k.meta_mensual != null ? String(k.meta_mensual) : "";
+    fLogro.value = k && k.logro != null ? String(k.logro) : "";
+    fMes.value = k && k.mes != null ? String(k.mes) : fMes.value;
+    fAnio.value = k && k.anio != null ? String(k.anio) : fAnio.value;
+    btnKpiLabel.textContent = "Actualizar KPI";
+    fNombre.focus();
+  }
+
   function renderRows(list) {
     tbody.innerHTML = "";
     if (!list || !list.length) {
       var tr = document.createElement("tr");
       var td = document.createElement("td");
-      td.colSpan = 7;
+      td.colSpan = 8;
       td.textContent = "No hay KPIs para el año y mes seleccionados.";
       td.style.color = "var(--color-text-muted)";
       tr.appendChild(td);
@@ -129,6 +147,60 @@
         td.textContent = cell;
         tr.appendChild(td);
       });
+
+      var tdAcciones = document.createElement("td");
+      tdAcciones.style.whiteSpace = "nowrap";
+
+      var btnEditar = document.createElement("button");
+      btnEditar.type = "button";
+      btnEditar.className = "btn btn--ghost";
+      btnEditar.textContent = "Editar";
+      btnEditar.style.marginRight = "0.35rem";
+      btnEditar.addEventListener("click", function () {
+        hideMsg();
+        setEditMode(k);
+      });
+
+      var btnEliminar = document.createElement("button");
+      btnEliminar.type = "button";
+      btnEliminar.className = "btn btn--danger";
+      btnEliminar.textContent = "Eliminar";
+      btnEliminar.addEventListener("click", async function () {
+        hideMsg();
+        var ok = window.confirm("¿Eliminar el KPI \"" + (k.nombre || "") + "\"?");
+        if (!ok) {
+          return;
+        }
+        setFormLoading(true);
+        try {
+          var delRes = await window.AppApi.postVerify(
+            "deleteKPI",
+            { caller: session.usuario, idKpi: k.id_kpi },
+            "getPendingResult",
+            15,
+            350
+          );
+          if (!delRes || delRes.status !== "success") {
+            showMsg((delRes && delRes.message) || "No se pudo eliminar el KPI.");
+            setFormLoading(false);
+            return;
+          }
+          if (editandoIdKpi && editandoIdKpi === String(k.id_kpi || "")) {
+            formKpi.reset();
+            applyMesAnioVigente();
+            resetFormMode();
+          }
+          showMsg("KPI eliminado correctamente.", "success");
+          await cargarLista();
+        } catch (errDel) {
+          showMsg("Error de red al eliminar KPI.");
+        }
+        setFormLoading(false);
+      });
+
+      tdAcciones.appendChild(btnEditar);
+      tdAcciones.appendChild(btnEliminar);
+      tr.appendChild(tdAcciones);
       tbody.appendChild(tr);
     });
   }
@@ -187,22 +259,22 @@
     }
     setFormLoading(true);
     try {
-      var res = await window.AppApi.postVerify(
-        "createKPI",
-        {
-          caller: session.usuario,
-          kpi: {
-            nombre: nombre,
-            meta_mensual: meta,
-            logro: logro,
-            mes: mes,
-            anio: anio,
-          },
+      var isEdit = !!editandoIdKpi;
+      var accion = editandoIdKpi ? "updateKPI" : "createKPI";
+      var payload = {
+        caller: session.usuario,
+        kpi: {
+          nombre: nombre,
+          meta_mensual: meta,
+          logro: logro,
+          mes: mes,
+          anio: anio,
         },
-        "getPendingResult",
-        15,
-        350
-      );
+      };
+      if (editandoIdKpi) {
+        payload.idKpi = editandoIdKpi;
+      }
+      var res = await window.AppApi.postVerify(accion, payload, "getPendingResult", 15, 350);
       if (!res || res.status !== "success") {
         showMsg((res && res.message) || "No se pudo guardar el KPI.");
         setFormLoading(false);
@@ -211,7 +283,8 @@
       fNombre.value = "";
       fMeta.value = "";
       fLogro.value = "";
-      showMsg("KPI guardado correctamente.", "success");
+      resetFormMode();
+      showMsg(isEdit ? "KPI actualizado correctamente." : "KPI guardado correctamente.", "success");
       filtAnio.value = fAnio.value;
       filtMes.value = String(mes);
       await cargarLista();
@@ -221,5 +294,6 @@
     setFormLoading(false);
   });
 
+  resetFormMode();
   cargarLista();
 })();
