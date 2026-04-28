@@ -25,6 +25,10 @@
   var dashPeriodo = document.getElementById("dashPeriodo");
   var dashFiltersShell = document.getElementById("dashFiltersShell");
   var btnToggleFilters = document.getElementById("btnToggleFilters");
+  var dlgCapResumen = document.getElementById("dlgCapResumen");
+  var dlgCapTitulo = document.getElementById("dlgCapTitulo");
+  var dlgCapContenido = document.getElementById("dlgCapContenido");
+  var btnCerrarCapResumen = document.getElementById("btnCerrarCapResumen");
 
   if (!window.AppAuth.isDashboardViewer(session)) {
     blockNoAdmin.hidden = false;
@@ -32,6 +36,7 @@
   }
 
   blockAdmin.hidden = false;
+  var charts = {};
   var pageInner = document.querySelector(".page-inner.dash-page");
   if (pageInner) {
     pageInner.classList.add("dash-page--pro");
@@ -303,12 +308,26 @@
     return createMiniDonut(pct);
   }
 
+  function shouldHideDashboardKpi(k) {
+    var id = String((k && k.id_kpi) || "").toLowerCase();
+    var nom = String((k && k.nombre) || "").toLowerCase();
+    if (id === "cs_idx_vac") {
+      return true;
+    }
+    if (nom.indexOf("sucamec") >= 0 || id.indexOf("sucamec") >= 0) {
+      return true;
+    }
+    return false;
+  }
+
   function renderKpisTarjetas(data) {
     var wrap = document.getElementById("dashKpisTarjetas");
     if (!wrap) {
       return;
     }
-    var list = (data && data.kpis) || [];
+    var list = ((data && data.kpis) || []).filter(function (k) {
+      return !shouldHideDashboardKpi(k);
+    });
     wrap.innerHTML = "";
     if (!list.length) {
       var p = document.createElement("p");
@@ -374,6 +393,76 @@
       art.appendChild(h3);
       art.appendChild(main);
       art.appendChild(barWrap);
+      wrap.appendChild(art);
+    });
+  }
+
+  function abrirResumenCapacitacion(item) {
+    if (!dlgCapResumen || !dlgCapContenido || !item) {
+      return;
+    }
+    dlgCapTitulo.textContent = (item.tema || "Tema") + " — resumen por cliente";
+    dlgCapContenido.innerHTML = "";
+    var list = item.por_cliente || [];
+    if (!list.length) {
+      var p0 = document.createElement("p");
+      p0.className = "dash-muted";
+      p0.textContent = "Sin registros por cliente para este tema.";
+      dlgCapContenido.appendChild(p0);
+    } else {
+      var ul = document.createElement("ul");
+      ul.className = "dash-alto-list";
+      list.forEach(function (x) {
+        var li = document.createElement("li");
+        li.innerHTML = "<strong>" + escapeHtml(x.cliente || "Sin cliente") + "</strong> — " + String(x.cantidad || 0) + " persona(s)";
+        ul.appendChild(li);
+      });
+      dlgCapContenido.appendChild(ul);
+    }
+    if (dlgCapResumen.showModal) {
+      dlgCapResumen.showModal();
+    }
+  }
+
+  function renderCapacitacionesIndicadores(data) {
+    var wrap = document.getElementById("dashCapTarjetas");
+    if (!wrap) {
+      return;
+    }
+    var list = (data && data.capacitaciones && data.capacitaciones.por_tema) || [];
+    wrap.innerHTML = "";
+    if (!list.length) {
+      var p = document.createElement("p");
+      p.className = "dash-muted dash-kpis-empty";
+      p.textContent = "No hay ingresos a capacitaciones en el periodo y filtros seleccionados.";
+      wrap.appendChild(p);
+      return;
+    }
+    list.forEach(function (item) {
+      var art = document.createElement("article");
+      art.className = "dash-card dash-card--kpi dash-kpi-card";
+      art.style.cursor = "pointer";
+      art.title = "Ver resumen por cliente";
+      art.addEventListener("click", function () {
+        abrirResumenCapacitacion(item);
+      });
+      var h3 = document.createElement("h3");
+      h3.textContent = item.tema || "Tema";
+      var main = document.createElement("div");
+      main.className = "dash-kpi-card__main";
+      var left = document.createElement("div");
+      left.className = "dash-kpi-card__left";
+      var metric = document.createElement("div");
+      metric.className = "metric";
+      metric.textContent = String(item.total_personas != null ? item.total_personas : 0);
+      var note = document.createElement("p");
+      note.className = "dash-card-note";
+      note.textContent = "Personas que ingresaron (clic para ver por cliente)";
+      left.appendChild(metric);
+      left.appendChild(note);
+      main.appendChild(left);
+      art.appendChild(h3);
+      art.appendChild(main);
       wrap.appendChild(art);
     });
   }
@@ -533,29 +622,34 @@
       if (crx) crx.clearRect(0, 0, canvasRadar.width, canvasRadar.height);
     }
 
-    var cs = sp && sp.carnet_sucamec;
-    if (charts.carnet) charts.carnet.destroy();
-    charts.carnet = new Chart(document.getElementById("chartCarnet"), {
-      type: "doughnut",
-      data: {
-        labels: ["Cumple", "No cumple", "Otros / vacío"],
-        datasets: [
-          {
-            data: [cs && cs.cumple ? cs.cumple : 0, cs && cs.no_cumple ? cs.no_cumple : 0, cs && cs.otros_o_vacio ? cs.otros_o_vacio : 0],
-            backgroundColor: ["#2ee59b", "#ff5c57", "#6b7a90"],
-            borderWidth: 2,
-            borderColor: "#121a26",
-            hoverOffset: 10,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: "58%",
-        plugins: { legend: { position: "bottom" } },
-      },
-    });
+    var canvasCarnet = document.getElementById("chartCarnet");
+    if (canvasCarnet) {
+      var cs = sp && sp.carnet_sucamec;
+      if (charts.carnet) {
+        charts.carnet.destroy();
+      }
+      charts.carnet = new Chart(canvasCarnet, {
+        type: "doughnut",
+        data: {
+          labels: ["Cumple", "No cumple", "Otros / vacío"],
+          datasets: [
+            {
+              data: [cs && cs.cumple ? cs.cumple : 0, cs && cs.no_cumple ? cs.no_cumple : 0, cs && cs.otros_o_vacio ? cs.otros_o_vacio : 0],
+              backgroundColor: ["#2ee59b", "#ff5c57", "#6b7a90"],
+              borderWidth: 2,
+              borderColor: "#121a26",
+              hoverOffset: 10,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: "58%",
+          plugins: { legend: { position: "bottom" } },
+        },
+      });
+    }
 
     var pn = (data.incidentes && data.incidentes.por_nivel) || {};
     if (charts.incNivel) charts.incNivel.destroy();
@@ -727,6 +821,7 @@
       dashPeriodo.textContent = formatPeriodoLabel(d);
       renderKpis(d);
       renderKpisTarjetas(d);
+      renderCapacitacionesIndicadores(d);
       renderCharts(d);
     } catch (e) {
       showMsg("Error de red al consultar el dashboard.");
@@ -762,6 +857,11 @@
   btnAplicar.addEventListener("click", function () {
     refrescarDashboard({ silent: false });
   });
+  if (btnCerrarCapResumen && dlgCapResumen) {
+    btnCerrarCapResumen.addEventListener("click", function () {
+      dlgCapResumen.close();
+    });
+  }
 
   cargarClientes();
   cargarSupervisores();
