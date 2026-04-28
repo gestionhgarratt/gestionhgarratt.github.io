@@ -37,7 +37,7 @@
 
   blockAdmin.hidden = false;
 
-  var TIPOS = ["asistencias_dia", "asistencias_noche", "faltas", "suspensiones", "permisos", "vacaciones", "descanso_medico", "bajas"];
+  var TIPOS = ["asistencias_dia", "asistencias_noche", "faltas", "suspensiones", "permisos", "vacaciones", "reten", "descanso_medico", "bajas"];
   var LABELS = {
     asistencias_dia: "Asistencias día",
     asistencias_noche: "Asistencias noche",
@@ -45,6 +45,7 @@
     suspensiones: "Suspensiones",
     permisos: "Permisos",
     vacaciones: "Vacaciones",
+    reten: "Retén",
     descanso_medico: "Descanso médico",
     bajas: "Bajas",
   };
@@ -533,3 +534,4 @@
     }
   })();
 })();
+
