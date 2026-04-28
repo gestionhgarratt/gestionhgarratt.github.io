@@ -147,11 +147,28 @@
           <div id="dashKpisTarjetas" class="dash-kpis-tarjetas"></div>
         </section>
 
+        <section class="dash-kpis-section" aria-label="Capacitaciones por tema">
+          <h3 class="dash-kpis-section__title">Capacitaciones por tema</h3>
+          <div id="dashCapTarjetas" class="dash-kpis-tarjetas"></div>
+        </section>
+
       </div>
     </div>
+    <dialog id="dlgCapResumen" class="modal">
+      <div class="modal__header">
+        <h3 id="dlgCapTitulo">Resumen por cliente</h3>
+      </div>
+      <div class="modal__body">
+        <div id="dlgCapContenido"></div>
+      </div>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--ghost" id="btnCerrarCapResumen">Cerrar</button>
+      </div>
+    </dialog>
     <script src="../js/config.js"></script>
     <script src="../js/api.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/dashboard.js"></script>
   </body>
 </html>
+
