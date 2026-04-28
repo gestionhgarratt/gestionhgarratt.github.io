@@ -7,7 +7,7 @@
 
   /** @type {string} URL del deploy (termina en /exec) */
   var SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycbwqUb3xoMEdFxL4fjlAUsGcYhUqFzDuiAIj46xjixysLoVsSRyViQ2YlbBXj1aLnaVl/exec";
+    "https://script.google.com/macros/s/AKfycbz1njzsu40q6BJbkNuIFQUrK2ZXJe01p595_ip_BmRtW-9sO8jQL-hRRv0_Nd--cLHS/exec";
 
   /** Navegación por rol (Usuarios solo administrador). */
   var MODULE_ACCESS = {
@@ -20,6 +20,8 @@
       },
       { id: "usuarios", label: "Usuarios", file: "pages/usuarios.html" },
       { id: "kpis", label: "KPIs", file: "pages/kpis.html" },
+      { id: "capacitaciones", label: "Capacitaciones", file: "pages/capacitaciones.html" },
+      { id: "listasCapacitacion", label: "Listas de capacitación", file: "pages/listas-capacitacion.html" },
       {
         id: "controlServicio",
         label: "Control de servicio",
