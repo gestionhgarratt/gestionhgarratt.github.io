@@ -1,4 +1,4 @@
-**
+/**
  * Control de servicio — cuadrícula por día, por cliente y unidad (solo administrador).
  */
 (function () {
@@ -303,7 +303,8 @@
     try {
       var res = await window.AppApi.get("listClientes", { caller: session.usuario });
       if (!res || res.status !== "success") {
-        return;
+        showMsg((res && res.message) || "No se pudo cargar la lista de clientes.");
+        return [];
       }
       var list = (res.data && res.data.clientes) || [];
       list.forEach(function (c) {
@@ -312,8 +313,10 @@
         o.textContent = c.cliente || c.id_cliente;
         selCliente.appendChild(o);
       });
+      return list;
     } catch (e) {
-      /* ignore */
+      showMsg("Error de red al cargar clientes.");
+      return [];
     }
   }
 
@@ -330,7 +333,8 @@
         idCliente: idCliente,
       });
       if (!res || res.status !== "success") {
-        return;
+        showMsg((res && res.message) || "No se pudo cargar la lista de unidades.");
+        return [];
       }
       var list = (res.data && res.data.unidades) || [];
       list.forEach(function (u) {
@@ -339,8 +343,10 @@
         o.textContent = u.unidad || u.id_unidad;
         selUnidad.appendChild(o);
       });
+      return list;
     } catch (e) {
-      /* ignore */
+      showMsg("Error de red al cargar unidades.");
+      return [];
     }
   }
 
@@ -373,7 +379,7 @@
       buildGrid(d, res.data.detalle, res.data.plan_personal);
       wrapGrid.hidden = false;
     } catch (e) {
-      showMsg("Error de red al cargar.");
+      showMsg("Error al cargar: " + (e && e.message ? e.message : "red"));
     }
     loading.hidden = true;
   }
@@ -484,5 +490,46 @@
     setGuardarLoading(false);
   });
 
-  cargarClientes();
+  (async function initAutoLoad() {
+    try {
+      var clientes = await cargarClientes();
+      if (!clientes || !clientes.length) {
+        showMsg("No hay clientes disponibles para mostrar información.");
+        return;
+      }
+
+      // Busca el primer cliente que sí tenga unidades.
+      var clienteElegido = null;
+      var unidadesElegidas = [];
+      for (var i = 0; i < clientes.length; i++) {
+        var idCli = clientes[i] && clientes[i].id_cliente ? clientes[i].id_cliente : "";
+        if (!idCli) {
+          continue;
+        }
+        var unidades = await cargarUnidades(idCli);
+        if (unidades && unidades.length) {
+          clienteElegido = idCli;
+          unidadesElegidas = unidades;
+          break;
+        }
+      }
+
+      if (!clienteElegido || !unidadesElegidas.length) {
+        showMsg("No hay unidades registradas para los clientes disponibles.");
+        return;
+      }
+
+      selCliente.value = clienteElegido;
+      // Recarga combo para garantizar que las opciones visibles coincidan.
+      unidadesElegidas = await cargarUnidades(clienteElegido);
+      if (!unidadesElegidas || !unidadesElegidas.length) {
+        showMsg("No se pudo cargar una unidad inicial.");
+        return;
+      }
+      selUnidad.value = unidadesElegidas[0].id_unidad || "";
+      await cargarPeriodo();
+    } catch (err) {
+      showMsg("Fallo en carga inicial: " + (err && err.message ? err.message : "desconocido"));
+    }
+  })();
 })();
