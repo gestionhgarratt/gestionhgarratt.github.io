@@ -165,10 +165,45 @@
         <button type="button" class="btn btn--ghost" id="btnCerrarCapResumen">Cerrar</button>
       </div>
     </dialog>
+    <dialog id="dlgKpiDetalle" class="modal modal--wide">
+      <div class="modal__header">
+        <h3 id="dlgKpiDetalleTitulo">Detalle KPI</h3>
+      </div>
+      <div class="modal__body">
+        <div class="kpis-form-grid" style="margin-bottom: 0.75rem">
+          <div class="field" style="margin-bottom: 0">
+            <label for="fKpiDetCliente">Cliente</label>
+            <input id="fKpiDetCliente" class="input" type="text" placeholder="Filtrar cliente" />
+          </div>
+          <div class="field" style="margin-bottom: 0">
+            <label for="fKpiDetUnidad">Unidad</label>
+            <input id="fKpiDetUnidad" class="input" type="text" placeholder="Filtrar unidad" />
+          </div>
+          <div class="field" style="margin-bottom: 0">
+            <label for="fKpiDetCantidad">Cantidad eventos</label>
+            <input id="fKpiDetCantidad" class="input" type="text" placeholder="Filtrar cantidad" />
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Unidad</th>
+                <th>Cantidad eventos</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyKpiDetalle"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--ghost" id="btnCerrarKpiDetalle">Cerrar</button>
+      </div>
+    </dialog>
     <script src="../js/config.js"></script>
     <script src="../js/api.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/dashboard.js"></script>
   </body>
 </html>
-
