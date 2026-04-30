@@ -1,5 +1,5 @@
 /**
- * Página pública de acceso a capacitación.
+ * P?gina p?blica de acceso a capacitaci?n.
  */
 (function () {
   "use strict";
@@ -23,6 +23,9 @@
   var capActual = null;
 
   function showMsg(text, kind) {
+    if (!msg) {
+      return;
+    }
     msg.hidden = false;
     msg.className = "msg msg--" + (kind || "error");
     msg.textContent = text;
@@ -37,29 +40,37 @@
   }
 
   async function cargarClientes() {
-    var res = await window.AppApi.get("listClientesPublic", {});
+    if (!window.AppApi || !window.AppApi.get) {
+      throw new Error("No se carg? api.js (AppApi). Revise la consola del navegador.");
+    }
+    var getter = window.AppApi.getJsonp || window.AppApi.get;
+    var res = await getter("listClientesPublic", {});
     if (!res || res.status !== "success") {
       throw new Error((res && res.message) || "No se pudo cargar clientes.");
     }
     var list = (res.data && res.data.clientes) || [];
-    fCliente.innerHTML = '<option value="">Seleccione</option>';
+    fCliente.innerHTML = '<option value="">Seleccione cliente</option>';
     list.forEach(function (c) {
       var o = document.createElement("option");
       o.value = c.id_cliente;
       o.textContent = c.cliente || c.id_cliente;
       fCliente.appendChild(o);
     });
+    if (!list.length) {
+      showMsg("No hay clientes registrados en el sistema. Cargue clientes en el m?dulo correspondiente.", "info");
+    }
   }
 
   async function cargarUnidades() {
-    fUnidad.innerHTML = '<option value="">Seleccione</option>';
+    fUnidad.innerHTML = '<option value="">Seleccione unidad</option>';
     var idC = fCliente.value;
     if (!idC) {
       fUnidad.disabled = true;
       return;
     }
     fUnidad.disabled = false;
-    var res = await window.AppApi.get("listUnidadesPublic", { idCliente: idC });
+    var getter = window.AppApi.getJsonp || window.AppApi.get;
+    var res = await getter("listUnidadesPublic", { idCliente: idC });
     if (!res || res.status !== "success") {
       throw new Error((res && res.message) || "No se pudo cargar unidades.");
     }
@@ -74,17 +85,25 @@
 
   async function cargarCapacitacion() {
     if (!token) {
-      throw new Error("URL inválida: falta token.");
+      throw new Error("URL inv?lida: falta token.");
     }
-    var res = await window.AppApi.get("getCapacitacionPublica", { token: token });
+    if (!window.AppApi || !window.AppApi.get) {
+      throw new Error("No se carg? api.js (AppApi).");
+    }
+    var cfg = window.AppConfig && window.AppConfig.getScriptUrl ? window.AppConfig.getScriptUrl() : "";
+    if (!cfg || String(cfg).indexOf("PEGA_AQUI") !== -1) {
+      throw new Error("Falta configurar SCRIPT_URL en js/config.js en el sitio publicado.");
+    }
+    var getter = window.AppApi.getJsonp || window.AppApi.get;
+    var res = await getter("getCapacitacionPublica", { token: token });
     if (!res || res.status !== "success") {
-      throw new Error((res && res.message) || "Capacitación no disponible.");
+      throw new Error((res && res.message) || "Capacitaci?n no disponible.");
     }
     capActual = res.data && res.data.capacitacion ? res.data.capacitacion : null;
     if (!capActual) {
-      throw new Error("No se encontró la capacitación.");
+      throw new Error("No se encontr? la capacitaci?n.");
     }
-    tituloCap.textContent = capActual.tema || "Capacitación";
+    tituloCap.textContent = capActual.tema || "Capacitaci?n";
     fechaCap.textContent = capActual.fecha ? "Fecha: " + capActual.fecha : "";
   }
 
@@ -92,7 +111,7 @@
     e.preventDefault();
     hideMsg();
     if (!capActual) {
-      showMsg("Capacitación no disponible.");
+      showMsg("Capacitaci?n no disponible.");
       return;
     }
     var idCliente = fCliente.value;
@@ -105,7 +124,8 @@
     }
     setLoading(true);
     try {
-      var out = await window.AppApi.postVerify(
+      var poster = window.AppApi.postVerifyJsonp || window.AppApi.postVerify;
+      var out = await poster(
         "registrarAccesoCapacitacion",
         {
           token: token,
@@ -157,10 +177,29 @@
   (async function init() {
     try {
       await cargarCapacitacion();
+    } catch (e1) {
+      if (tituloCap) {
+        tituloCap.textContent = "No disponible";
+      }
+      if (fechaCap) {
+        fechaCap.textContent = "";
+      }
+      showMsg(
+        (e1 && e1.message ? e1.message : "No se pudo cargar la capacitaci?n.") +
+          " Si el error menciona red o CORS, verifique el despliegue del Web App (acceso: cualquier persona) y SCRIPT_URL.",
+        "error"
+      );
+      return;
+    }
+    try {
       await cargarClientes();
+    } catch (e2) {
+      showMsg((e2 && e2.message ? e2.message : "No se pudieron cargar los clientes.") + " Revise SCRIPT_URL y la consola (F12).", "error");
+    }
+    try {
       await cargarUnidades();
-    } catch (e) {
-      showMsg(e && e.message ? e.message : "No se pudo inicializar la página.");
+    } catch (e3) {
+      showMsg(e3 && e3.message ? e3.message : "No se pudieron cargar las unidades.", "error");
     }
   })();
 })();
