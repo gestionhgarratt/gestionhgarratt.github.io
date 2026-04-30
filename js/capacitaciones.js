@@ -44,9 +44,12 @@
   }
 
   function getPublicBaseUrl() {
-    var path = window.location.pathname || "";
-    var basePath = path.replace(/\/pages\/[^/]*$/, "/capacitacion.html");
-    return window.location.origin + basePath;
+    try {
+      // Desde /pages/capacitaciones.html, sube a la raíz del sitio.
+      return new URL("../capacitacion.html", window.location.href).toString();
+    } catch (e) {
+      return window.location.origin + "/capacitacion.html";
+    }
   }
 
   function buildPublicUrl(token) {
