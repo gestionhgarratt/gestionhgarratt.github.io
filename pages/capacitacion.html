@@ -4,6 +4,19 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Acceso capacitación</title>
+    <script>
+      (function () {
+        var path = window.location.pathname || "/";
+        var idx = path.indexOf("/pages/");
+        var baseHref = "/";
+        if (idx > 0) {
+          baseHref = path.slice(0, idx).replace(/\/?$/, "/");
+        }
+        var b = document.createElement("base");
+        b.href = baseHref;
+        document.head.appendChild(b);
+      })();
+    </script>
     <link rel="stylesheet" href="common.css" />
   </head>
   <body>
@@ -35,11 +48,15 @@
           </div>
           <div class="field" style="margin-bottom: 0">
             <label for="fCliente">Cliente</label>
-            <select id="fCliente" class="input" required></select>
+            <select id="fCliente" class="input" required>
+              <option value="">Cargando clientes…</option>
+            </select>
           </div>
           <div class="field" style="margin-bottom: 0">
             <label for="fUnidad">Unidad</label>
-            <select id="fUnidad" class="input" required disabled></select>
+            <select id="fUnidad" class="input" required disabled>
+              <option value="">Seleccione cliente primero</option>
+            </select>
           </div>
           <div class="field kpis-form-actions" style="margin-bottom: 0">
             <button id="btnAcceder" class="btn btn--primary" type="submit" style="margin-top: 1.35rem; width: 100%">
