@@ -4,20 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Acceso capacitación</title>
-    <script>
-      (function () {
-        var path = window.location.pathname || "/";
-        var idx = path.indexOf("/pages/");
-        var baseHref = "/";
-        if (idx > 0) {
-          baseHref = path.slice(0, idx).replace(/\/?$/, "/");
-        }
-        var b = document.createElement("base");
-        b.href = baseHref;
-        document.head.appendChild(b);
-      })();
-    </script>
-    <link rel="stylesheet" href="common.css" />
+    <link rel="stylesheet" href="../common.css" />
   </head>
   <body>
     <div class="page-inner" style="max-width: 760px">
@@ -81,8 +68,8 @@
       </div>
     </dialog>
 
-    <script src="js/config.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/capacitacion-publica.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/capacitacion-publica.js"></script>
   </body>
 </html>
