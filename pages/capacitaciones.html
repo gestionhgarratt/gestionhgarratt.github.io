@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Capacitaciones</title>
+    <link rel="stylesheet" href="../common.css" />
+  </head>
+  <body>
+    <div class="page-inner">
+      <h2>Capacitaciones</h2>
+      <p>Registre tema, fecha y enlace. El sistema generará una URL pública para acceso del personal.</p>
+
+      <div id="blockNoAdmin" class="card" hidden>
+        <p style="margin: 0">Solo administradores pueden gestionar capacitaciones.</p>
+      </div>
+
+      <div id="blockAdmin" hidden>
+        <div id="msg" class="msg msg--error" role="alert" hidden></div>
+
+        <section class="card" style="margin-bottom: 1rem">
+          <h3 class="kpis-section-title">Nueva capacitación</h3>
+          <form id="formCap" class="kpis-form-grid">
+            <div class="field" style="margin-bottom: 0">
+              <label for="fTema">Tema</label>
+              <input class="input" id="fTema" type="text" required maxlength="150" />
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label for="fFecha">Fecha</label>
+              <input class="input" id="fFecha" type="date" required />
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label for="fLink">Link de capacitación</label>
+              <input class="input" id="fLink" type="url" required placeholder="https://..." />
+            </div>
+            <div class="field kpis-form-actions" style="margin-bottom: 0">
+              <button type="submit" class="btn btn--primary" id="btnGuardarCap" style="margin-top: 1.35rem; width: 100%">
+                <span id="btnCapLabel">Guardar capacitación</span>
+                <span id="btnCapSpinner" class="spinner" hidden aria-hidden="true"></span>
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Tema</th>
+                <th>Fecha</th>
+                <th>Link capacitación</th>
+                <th>URL pública</th>
+                <th>Usuario</th>
+                <th>Creación</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyCaps"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/capacitaciones.js"></script>
+  </body>
+</html>
