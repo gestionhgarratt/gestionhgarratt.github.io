@@ -1,4 +1,4 @@
-/* Base reutilizable â€” mobile-first */
+/* Base reutilizable — mobile-first */
 :root {
   --color-bg: #0f1419;
   --color-surface: #1a2332;
@@ -490,7 +490,7 @@ img {
   line-height: 1.25;
 }
 
-/* PÃ¡ginas embebidas */
+/* Páginas embebidas */
 .page-inner {
   padding: 1rem 1.25rem 2rem;
   max-width: 1200px;
@@ -508,7 +508,7 @@ img {
   font-size: 0.95rem;
 }
 
-/* Tablas y barra de acciones (mÃ³dulos) */
+/* Tablas y barra de acciones (módulos) */
 .toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -680,7 +680,7 @@ img {
   padding: 0 1.25rem 1.25rem;
 }
 
-/* SupervisiÃ³n: bloques y valoraciÃ³n 1â€“5 */
+/* Supervisión: bloques y valoración 1–5 */
 .super-meta {
   display: grid;
   gap: 0.75rem;
@@ -812,7 +812,7 @@ img {
   pointer-events: none;
 }
 
-/* Incidentes â€” bloques apilados */
+/* Incidentes — bloques apilados */
 .inc-stack {
   display: flex;
   flex-direction: column;
@@ -1035,7 +1035,7 @@ img {
   z-index: 0;
 }
 
-/* Vista â€œproâ€: tarjetas y grÃ¡ficos mÃ¡s contundentes */
+/* Vista “pro”: tarjetas y gráficos más contundentes */
 .dash-page--pro .dash-card.dash-card--kpi {
   padding: 0.55rem 0.62rem;
   border-radius: calc(var(--radius) + 2px);
@@ -1594,7 +1594,7 @@ img {
   margin-bottom: 0.35rem;
 }
 
-/* MÃ³dulo KPIs */
+/* Módulo KPIs */
 .kpis-section-title {
   margin: 0 0 0.75rem;
   font-size: 1rem;
@@ -1617,7 +1617,7 @@ img {
   margin-right: 0.75rem;
 }
 
-/* Dashboard â€” tarjetas KPIs registrados */
+/* Dashboard — tarjetas KPIs registrados */
 .dash-kpis-section {
   margin-bottom: 1rem;
 }
