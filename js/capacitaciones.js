@@ -45,10 +45,10 @@
 
   function getPublicBaseUrl() {
     try {
-      // Desde /pages/capacitaciones.html, sube a la raíz del sitio.
-      return new URL("../capacitacion.html", window.location.href).toString();
+      // Publicamos la landing en /pages/capacitacion.html para evitar 404 por rutas de Pages.
+      return new URL("./capacitacion.html", window.location.href).toString();
     } catch (e) {
-      return window.location.origin + "/capacitacion.html";
+      return window.location.origin + "/pages/capacitacion.html";
     }
   }
 
