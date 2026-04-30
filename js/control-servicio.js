@@ -39,8 +39,8 @@
 
   var TIPOS = ["asistencias_dia", "asistencias_noche", "faltas", "suspensiones", "permisos", "vacaciones", "reten", "descanso_medico", "bajas"];
   var LABELS = {
-    asistencias_dia: "Asistencias día",
-    asistencias_noche: "Asistencias noche",
+    asistencias_dia: "Faltantes cobertura día",
+    asistencias_noche: "Faltantes cobertura noche",
     faltas: "Faltas",
     suspensiones: "Suspensiones",
     permisos: "Permisos",
@@ -534,4 +534,3 @@
     }
   })();
 })();
-
