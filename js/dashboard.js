@@ -29,6 +29,14 @@
   var dlgCapTitulo = document.getElementById("dlgCapTitulo");
   var dlgCapContenido = document.getElementById("dlgCapContenido");
   var btnCerrarCapResumen = document.getElementById("btnCerrarCapResumen");
+  var dlgKpiDetalle = document.getElementById("dlgKpiDetalle");
+  var dlgKpiDetalleTitulo = document.getElementById("dlgKpiDetalleTitulo");
+  var tbodyKpiDetalle = document.getElementById("tbodyKpiDetalle");
+  var fKpiDetCliente = document.getElementById("fKpiDetCliente");
+  var fKpiDetUnidad = document.getElementById("fKpiDetUnidad");
+  var fKpiDetCantidad = document.getElementById("fKpiDetCantidad");
+  var btnCerrarKpiDetalle = document.getElementById("btnCerrarKpiDetalle");
+  var currentKpiDetalleRows = [];
 
   if (!window.AppAuth.isDashboardViewer(session)) {
     blockNoAdmin.hidden = false;
@@ -340,6 +348,11 @@
     list.forEach(function (k) {
       var art = document.createElement("article");
       art.className = "dash-card dash-card--kpi dash-kpi-card";
+      art.style.cursor = "pointer";
+      art.title = "Ver detalle";
+      art.addEventListener("click", function () {
+        abrirKpiDetalle(k);
+      });
       var idKpi = String((k && k.id_kpi) || "").toLowerCase();
       if (idKpi === "cs_cobertura_dia" || idKpi === "cs_cobertura_noche") {
         art.classList.add("dash-kpi-card--coverage-highlight");
@@ -395,6 +408,77 @@
       art.appendChild(barWrap);
       wrap.appendChild(art);
     });
+  }
+
+  function renderKpiDetalleRows() {
+    if (!tbodyKpiDetalle) {
+      return;
+    }
+    var fc = String((fKpiDetCliente && fKpiDetCliente.value) || "")
+      .trim()
+      .toLowerCase();
+    var fu = String((fKpiDetUnidad && fKpiDetUnidad.value) || "")
+      .trim()
+      .toLowerCase();
+    var fq = String((fKpiDetCantidad && fKpiDetCantidad.value) || "")
+      .trim()
+      .toLowerCase();
+    var list = (currentKpiDetalleRows || []).filter(function (r) {
+      var c = String(r.cliente || "").toLowerCase();
+      var u = String(r.unidad || "").toLowerCase();
+      var q = String(r.cantidad_eventos != null ? r.cantidad_eventos : "").toLowerCase();
+      if (fc && c.indexOf(fc) < 0) {
+        return false;
+      }
+      if (fu && u.indexOf(fu) < 0) {
+        return false;
+      }
+      if (fq && q.indexOf(fq) < 0) {
+        return false;
+      }
+      return true;
+    });
+    tbodyKpiDetalle.innerHTML = "";
+    if (!list.length) {
+      var tr0 = document.createElement("tr");
+      var td0 = document.createElement("td");
+      td0.colSpan = 3;
+      td0.className = "dash-muted";
+      td0.textContent = "Sin detalle para este KPI con los filtros ingresados.";
+      tr0.appendChild(td0);
+      tbodyKpiDetalle.appendChild(tr0);
+      return;
+    }
+    list.forEach(function (r) {
+      var tr = document.createElement("tr");
+      [r.cliente || "Sin cliente", r.unidad || "Sin unidad", String(r.cantidad_eventos != null ? r.cantidad_eventos : 0)].forEach(function (cell) {
+        var td = document.createElement("td");
+        td.textContent = cell;
+        tr.appendChild(td);
+      });
+      tbodyKpiDetalle.appendChild(tr);
+    });
+  }
+
+  function abrirKpiDetalle(kpi) {
+    if (!dlgKpiDetalle) {
+      return;
+    }
+    currentKpiDetalleRows = (kpi && kpi.detalle_eventos) || [];
+    dlgKpiDetalleTitulo.textContent = "Detalle — " + String((kpi && kpi.nombre) || "KPI");
+    if (fKpiDetCliente) {
+      fKpiDetCliente.value = "";
+    }
+    if (fKpiDetUnidad) {
+      fKpiDetUnidad.value = "";
+    }
+    if (fKpiDetCantidad) {
+      fKpiDetCantidad.value = "";
+    }
+    renderKpiDetalleRows();
+    if (dlgKpiDetalle.showModal) {
+      dlgKpiDetalle.showModal();
+    }
   }
 
   function abrirResumenCapacitacion(item) {
@@ -862,6 +946,16 @@
       dlgCapResumen.close();
     });
   }
+  if (btnCerrarKpiDetalle && dlgKpiDetalle) {
+    btnCerrarKpiDetalle.addEventListener("click", function () {
+      dlgKpiDetalle.close();
+    });
+  }
+  [fKpiDetCliente, fKpiDetUnidad, fKpiDetCantidad].forEach(function (el) {
+    if (el) {
+      el.addEventListener("input", renderKpiDetalleRows);
+    }
+  });
 
   cargarClientes();
   cargarSupervisores();
