@@ -983,6 +983,134 @@ img {
   }
 }
 
+.table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+/* Informe PDF (análisis de seguridad) */
+.as-pdf-host {
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  width: 210mm;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.as-pdf-root {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 11px;
+  line-height: 1.45;
+  color: #1a2332;
+  background: #fff;
+  padding: 0;
+}
+
+.as-pdf-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #1e4a7a;
+}
+
+.as-pdf-logo {
+  max-height: 56px;
+  max-width: 140px;
+  object-fit: contain;
+}
+
+.as-pdf-header-text h1 {
+  margin: 0 0 0.2rem;
+  font-size: 1.35rem;
+  color: #1e4a7a;
+}
+
+.as-pdf-header-text p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #5a6b7d;
+}
+
+.as-pdf-section {
+  margin-bottom: 1rem;
+  page-break-inside: avoid;
+}
+
+.as-pdf-section h2 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  color: #1e4a7a;
+  border-bottom: 1px solid #d8e2ef;
+  padding-bottom: 0.25rem;
+}
+
+.as-pdf-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0.5rem;
+  font-size: 10.5px;
+}
+
+.as-pdf-table th {
+  text-align: left;
+  vertical-align: top;
+  width: 38%;
+  padding: 0.35rem 0.5rem;
+  background: #f4f7fb;
+  border: 1px solid #e2e8f0;
+  font-weight: 600;
+}
+
+.as-pdf-table td {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #e2e8f0;
+  vertical-align: top;
+}
+
+.as-pdf-photos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 0.5rem 0 0.85rem;
+}
+
+.as-pdf-photo {
+  margin: 0;
+  width: 100%;
+}
+
+.as-pdf-photo img {
+  width: 100%;
+  height: auto;
+  max-height: 260px;
+  min-height: 120px;
+  object-fit: contain;
+  border: 1px solid #dde4ee;
+  border-radius: 6px;
+  display: block;
+  background: #f8fafc;
+}
+
+.as-pdf-photo figcaption {
+  font-size: 8px;
+  color: #6b7c8f;
+  margin-top: 0.15rem;
+}
+
+.as-pdf-footer {
+  margin-top: 1.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e2e8f0;
+  font-size: 9px;
+  color: #6b7c8f;
+  text-align: center;
+}
+
 /* Dashboard */
 .dash-page {
   max-width: 1280px;
