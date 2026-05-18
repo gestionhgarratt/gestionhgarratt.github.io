@@ -7,7 +7,7 @@
 
   /** @type {string} URL del deploy (termina en /exec) */
   var SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycbyakMgHGSroMu-AAUcUzJhmDJ0cgbekZcdLxIjCt5r9tUvcQnZ3ADz7CxFP66aT30eE/exec";
+    "https://script.google.com/macros/s/AKfycbxFzTg6mjsWbFZ0ymML7mkpQPeQ1yiRiuv1L6Jt24o5q_msUiEj49ZGXwkBvfhKns9Z/exec";
 
   /** Navegación por rol (Usuarios solo administrador). */
   var MODULE_ACCESS = {
@@ -30,6 +30,16 @@
       { id: "supervision", label: "Supervisión", file: "pages/supervision.html" },
       { id: "incidentes", label: "Incidentes", file: "pages/incidentes.html" },
       {
+        id: "analisisSeguridad",
+        label: "Análisis de seguridad",
+        file: "pages/analisis-seguridad.html",
+      },
+      {
+        id: "resultadosAnalisisSeguridad",
+        label: "Resultados análisis seguridad",
+        file: "pages/analisis-seguridad-resultados.html",
+      },
+      {
         id: "resultadosSupervision",
         label: "Resultados supervisión",
         file: "pages/supervision-resultados.html",
@@ -44,6 +54,11 @@
       { id: "inicio", label: "Inicio", file: "pages/inicio.html" },
       { id: "supervision", label: "Supervisión", file: "pages/supervision.html" },
       { id: "incidentes", label: "Incidentes", file: "pages/incidentes.html" },
+      {
+        id: "analisisSeguridad",
+        label: "Análisis de seguridad",
+        file: "pages/analisis-seguridad.html",
+      },
     ],
     gerencia: [{ id: "dashboard", label: "Dashboard ejecutivo", file: "pages/dashboard.html" }],
   };
@@ -55,6 +70,13 @@
   };
 
   var STORAGE_KEY = "cs_kpis_session_v1";
+
+  /** Valor de id_cliente / id_unidad para prospectos (no están en la hoja clientes). */
+  var PROSPECTO_CLIENTE_ID = "__prospecto__";
+
+  /** Logo corporativo (informes PDF y dashboard). */
+  var COMPANY_LOGO_URL =
+    "https://res.cloudinary.com/drunurx3a/image/upload/v1767735454/paestextil/products/r9n4oib5wmaby9vsq3yh.png";
 
   global.AppConfig = {
     getScriptUrl: function () {
@@ -71,6 +93,15 @@
     },
     getCloudinary: function () {
       return CLOUDINARY;
+    },
+    getProspectoClienteId: function () {
+      return PROSPECTO_CLIENTE_ID;
+    },
+    getCompanyLogoUrl: function () {
+      return COMPANY_LOGO_URL;
+    },
+    isProspectoCliente: function (id) {
+      return String(id || "").trim() === PROSPECTO_CLIENTE_ID;
     },
   };
 })(typeof window !== "undefined" ? window : this);
