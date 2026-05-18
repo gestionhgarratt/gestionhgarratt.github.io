@@ -911,6 +911,78 @@ img {
   height: 1.1rem;
 }
 
+.check-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.45rem 0.75rem;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.check-grid label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  font-size: 0.88rem;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+.check-grid input {
+  margin-top: 0.15rem;
+  flex-shrink: 0;
+}
+
+.photo-preview-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.photo-preview-grid figure {
+  margin: 0;
+  position: relative;
+  width: 88px;
+  height: 88px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.photo-preview-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.photo-preview-grid .photo-preview__empty {
+  width: 100%;
+  padding: 1rem 0.35rem;
+}
+
+.as-form-section {
+  margin-bottom: 1rem;
+}
+
+.as-form-section h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+}
+
+.as-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .as-field-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Dashboard */
 .dash-page {
   max-width: 1280px;
@@ -2114,3 +2186,4 @@ img {
     min-height: 154px;
   }
 }
+
