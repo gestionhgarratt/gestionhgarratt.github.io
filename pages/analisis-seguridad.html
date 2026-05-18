@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Análisis de seguridad</title>
+    <link rel="stylesheet" href="../common.css" />
+  </head>
+  <body>
+    <div class="page-inner">
+      <h2>Análisis de seguridad</h2>
+      <p>
+        Levantamiento de información de la instalación. La marca temporal se registra al guardar. Puede adjuntar
+        fotos en cada sección (excepto razón social, R.U.C. y giro del negocio).
+      </p>
+
+      <div id="blockDeny" class="card" hidden>
+        <p style="margin: 0">Tu usuario no puede acceder a este formulario.</p>
+      </div>
+
+      <div id="blockMain" hidden>
+        <div id="msgTop" class="msg msg--error" role="alert" hidden></div>
+
+        <div class="card" style="margin-bottom: 1rem">
+          <h3 style="margin: 0 0 0.75rem; font-size: 1.05rem">Datos generales</h3>
+          <div class="super-meta">
+            <div class="field" style="margin-bottom: 0">
+              <label>Fecha y hora</label>
+              <div class="input" id="fechaHoraDisplay" style="background: var(--color-bg); cursor: default"></div>
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label>Usuario</label>
+              <div class="input" id="usuarioDisplay" style="background: var(--color-bg); cursor: default"></div>
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label for="selCliente">Cliente</label>
+              <select class="input" id="selCliente" required>
+                <option value="">— Cargando —</option>
+              </select>
+            </div>
+            <div class="field" style="margin-bottom: 0" id="wrapUnidadSelect">
+              <label for="selUnidad" id="lblUnidad">Unidad</label>
+              <select class="input" id="selUnidad" required disabled>
+                <option value="">— Elija primero un cliente —</option>
+              </select>
+            </div>
+            <div class="field" style="margin-bottom: 0" id="wrapUnidadNombre" hidden>
+              <label for="txtUnidadNombre">Nombre</label>
+              <input
+                class="input"
+                type="text"
+                id="txtUnidadNombre"
+                maxlength="500"
+                placeholder="Nombre del prospecto o instalación"
+              />
+            </div>
+          </div>
+        </div>
+
+        <form id="formAnalisis" novalidate>
+          <div id="formSections"></div>
+          <div class="card" style="margin-top: 1rem">
+            <button type="submit" class="btn btn--primary" id="btnGuardar">Guardar análisis</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/cloudinary-upload.js"></script>
+    <script src="../js/analisis-seguridad.js"></script>
+  </body>
+</html>
