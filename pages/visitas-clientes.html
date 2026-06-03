@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Visitas a clientes</title>
-    <link rel="stylesheet" href="../common.css" />
+    <link rel="stylesheet" href="../common.css?v=20250602-vis4" />
   </head>
   <body>
     <div class="page-inner">
@@ -49,7 +49,9 @@
         <div class="card vis-jornada-card" style="margin-top: 1rem">
           <h3 style="margin: 0 0 0.75rem; font-size: 1.05rem">Cierre de jornada</h3>
           <p style="margin: 0 0 0.75rem; font-size: 0.9rem; color: var(--color-text-muted)">
-            Cuando haya registrado todas las visitas del día, complete el kilometraje.
+            Al guardar cada visita se crea una fila en la hoja <strong>visitas_jornada</strong>. Complete el
+            kilometraje y pulse <strong>Guardar kilometraje</strong> (o use <strong>Descargar informe</strong>, que
+            también lo guarda). Si no aplica odómetro, puede usar 0 en inicio y fin.
           </p>
           <div class="as-field-row">
             <div class="field">
@@ -63,18 +65,43 @@
           </div>
           <div class="vis-jornada-actions">
             <button type="button" class="btn btn--ghost" id="btnGuardarKm">Guardar kilometraje</button>
+            <button type="button" class="btn btn--ghost" id="btnPreviewInforme">Vista previa del informe</button>
             <button type="button" class="btn btn--primary" id="btnInforme">Descargar informe del día</button>
           </div>
         </div>
       </div>
     </div>
 
+    <dialog id="dlgVisitaDetalle" class="modal modal--wide">
+      <div class="modal__header">
+        <h3 id="dlgVisitaTitulo">Detalle de visita</h3>
+        <button type="button" class="btn btn--ghost btn--tiny" id="btnDlgVisitaCerrar" aria-label="Cerrar">
+          Cerrar
+        </button>
+      </div>
+      <div class="modal__body vis-detail-modal-body" id="dlgVisitaBody"></div>
+    </dialog>
+
+    <dialog id="dlgInformePreview" class="modal modal--wide">
+      <div class="modal__header">
+        <h3>Vista previa del informe del día</h3>
+        <button type="button" class="btn btn--ghost btn--tiny" id="btnDlgInformeCerrarHdr" aria-label="Cerrar">
+          Cerrar
+        </button>
+      </div>
+      <div class="modal__body vis-informe-preview-body" id="dlgInformeBody"></div>
+      <div class="modal__footer">
+        <button type="button" class="btn btn--ghost" id="btnDlgInformeCerrar">Cerrar</button>
+        <button type="button" class="btn btn--primary" id="btnDlgInformePdf">Descargar PDF</button>
+      </div>
+    </dialog>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js" crossorigin="anonymous"></script>
     <script src="../js/config.js"></script>
     <script src="../js/api.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/cloudinary-upload.js"></script>
-    <script src="../js/visitas-clientes-informe.js"></script>
-    <script src="../js/visitas-clientes.js"></script>
+    <script src="../js/visitas-clientes-informe.js?v=20250602-vis4"></script>
+    <script src="../js/visitas-clientes.js?v=20250602-vis4"></script>
   </body>
 </html>
