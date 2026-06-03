@@ -1,9 +1,12 @@
 /**
  * Configuración global — reemplaza SCRIPT_URL tras desplegar Apps Script como Web App.
  * El script debe estar vinculado al mismo spreadsheet (bd_supervisor).
+ * BUILD: 20250602-visitas — verificar en producción: buscar "visitasClientes" en /js/config.js
  */
 (function (global) {
   "use strict";
+
+  var CONFIG_BUILD = "20250602-visitas";
 
   /** @type {string} URL del deploy (termina en /exec) */
   var SCRIPT_URL =
@@ -35,6 +38,12 @@
         file: "pages/analisis-seguridad.html",
       },
       {
+        id: "visitasClientes",
+        label: "Visitas a clientes",
+        shortLabel: "Visitas",
+        file: "pages/visitas-clientes.html",
+      },
+      {
         id: "resultadosAnalisisSeguridad",
         label: "Resultados análisis seguridad",
         file: "pages/analisis-seguridad-resultados.html",
@@ -58,6 +67,12 @@
         id: "analisisSeguridad",
         label: "Análisis de seguridad",
         file: "pages/analisis-seguridad.html",
+      },
+      {
+        id: "visitasClientes",
+        label: "Visitas a clientes",
+        shortLabel: "Visitas",
+        file: "pages/visitas-clientes.html",
       },
     ],
     gerencia: [{ id: "dashboard", label: "Dashboard ejecutivo", file: "pages/dashboard.html" }],
@@ -102,6 +117,9 @@
     },
     isProspectoCliente: function (id) {
       return String(id || "").trim() === PROSPECTO_CLIENTE_ID;
+    },
+    getConfigBuild: function () {
+      return CONFIG_BUILD;
     },
   };
 })(typeof window !== "undefined" ? window : this);
