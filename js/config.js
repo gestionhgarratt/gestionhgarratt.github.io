@@ -7,7 +7,7 @@
 
   /** @type {string} URL del deploy (termina en /exec) */
   var SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycbxFzTg6mjsWbFZ0ymML7mkpQPeQ1yiRiuv1L6Jt24o5q_msUiEj49ZGXwkBvfhKns9Z/exec";
+    "https://script.google.com/macros/s/AKfycby8r9az1F8Q8Or0ZAzsiaO3SfSLW4LMBNhJI9u68EKYlgvmHqVmccEWCiQUFPQZ90lk/exec";
 
   /** Navegación por rol (Usuarios solo administrador). */
   var MODULE_ACCESS = {
