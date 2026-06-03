@@ -89,17 +89,39 @@
     closeSidebar();
   }
 
-  if (useAdminShell) {
-    modules.forEach(function (mod) {
-      var btn = document.createElement("button");
-      btn.type = "button";
-      btn.setAttribute("data-module", mod.id);
+  function createNavButton(mod, className) {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.setAttribute("data-module", mod.id);
+    if (className) {
+      btn.className = className;
+    }
+    if (className === "app-shell__bottomnav-btn") {
+      var lab = document.createElement("span");
+      lab.className = "app-shell__bottomnav-label";
+      lab.textContent = mod.shortLabel || mod.label;
+      btn.appendChild(lab);
+    } else {
       btn.textContent = mod.label;
-      btn.addEventListener("click", function () {
-        loadModule(mod);
-      });
-      nav.appendChild(btn);
+    }
+    btn.addEventListener("click", function () {
+      loadModule(mod);
     });
+    return btn;
+  }
+
+  function renderModuleNav() {
+    if (!nav) {
+      return;
+    }
+    nav.innerHTML = "";
+    modules.forEach(function (mod) {
+      nav.appendChild(createNavButton(mod, ""));
+    });
+  }
+
+  if (useAdminShell) {
+    renderModuleNav();
     if (bottomNav) {
       bottomNav.hidden = true;
     }
@@ -108,28 +130,18 @@
     }
   } else {
     appShell.classList.add("app-shell--supervisor");
+    renderModuleNav();
     if (topUserSlot && topUserLabel) {
       topUserSlot.hidden = false;
       topUserLabel.textContent = session.usuario || "—";
     }
     if (bottomNav) {
       bottomNav.hidden = false;
+      bottomNav.innerHTML = "";
       modules.forEach(function (mod) {
-        var btn = document.createElement("button");
-        btn.type = "button";
-        btn.setAttribute("data-module", mod.id);
-        btn.className = "app-shell__bottomnav-btn";
-        var lab = document.createElement("span");
-        lab.className = "app-shell__bottomnav-label";
-        lab.textContent = mod.label;
-        btn.appendChild(lab);
-        btn.addEventListener("click", function () {
-          loadModule(mod);
-        });
-        bottomNav.appendChild(btn);
+        bottomNav.appendChild(createNavButton(mod, "app-shell__bottomnav-btn"));
       });
     }
-    nav.innerHTML = "";
   }
 
   window.addEventListener("message", function (ev) {
