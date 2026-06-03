@@ -23,7 +23,17 @@
   var kmInicio = document.getElementById("kmInicio");
   var kmFin = document.getElementById("kmFin");
   var btnGuardarKm = document.getElementById("btnGuardarKm");
+  var btnPreviewInforme = document.getElementById("btnPreviewInforme");
   var btnInforme = document.getElementById("btnInforme");
+  var dlgVisitaDetalle = document.getElementById("dlgVisitaDetalle");
+  var dlgVisitaBody = document.getElementById("dlgVisitaBody");
+  var dlgVisitaTitulo = document.getElementById("dlgVisitaTitulo");
+  var btnDlgVisitaCerrar = document.getElementById("btnDlgVisitaCerrar");
+  var dlgInformePreview = document.getElementById("dlgInformePreview");
+  var dlgInformeBody = document.getElementById("dlgInformeBody");
+  var btnDlgInformeCerrar = document.getElementById("btnDlgInformeCerrar");
+  var btnDlgInformeCerrarHdr = document.getElementById("btnDlgInformeCerrarHdr");
+  var btnDlgInformePdf = document.getElementById("btnDlgInformePdf");
 
   var clientesCache = [];
   var visitasDiaCache = [];
@@ -319,6 +329,53 @@
     }
   }
 
+  function formatHora(v) {
+    if (window.AppVisitasInforme && window.AppVisitasInforme.formatHoraVisita) {
+      return window.AppVisitasInforme.formatHoraVisita(v.hora_inicio);
+    }
+    return v.hora_inicio || "—";
+  }
+
+  function countVisitaDatos(v) {
+    var d = v.datos || {};
+    if (window.AppVisitasInforme && window.AppVisitasInforme.normalizeVisitaDatos) {
+      d = window.AppVisitasInforme.normalizeVisitaDatos(d);
+    }
+    return {
+      fotos: (d.fotos_visita || []).length,
+      novedades: (d.novedades || []).length,
+    };
+  }
+
+  function openDialog(dlg) {
+    if (dlg && typeof dlg.showModal === "function") {
+      dlg.showModal();
+    }
+  }
+
+  function closeDialog(dlg) {
+    if (dlg && typeof dlg.close === "function") {
+      dlg.close();
+    }
+  }
+
+  function verVisitaGuardada(idx) {
+    var v = visitasDiaCache[idx];
+    if (!v || !dlgVisitaDetalle || !dlgVisitaBody) {
+      return;
+    }
+    if (dlgVisitaTitulo) {
+      dlgVisitaTitulo.textContent =
+        "Visita " + (idx + 1) + " — " + formatHora(v) + " — " + (v.cliente || "");
+    }
+    if (window.AppVisitasInforme && window.AppVisitasInforme.renderVisitaDetail) {
+      window.AppVisitasInforme.renderVisitaDetail(dlgVisitaBody, v, idx, inpFecha.value);
+    } else {
+      dlgVisitaBody.innerHTML = "<p>No está disponible la vista de detalle.</p>";
+    }
+    openDialog(dlgVisitaDetalle);
+  }
+
   function renderSavedVisitas(visitas) {
     visitasDiaCache = visitas || [];
     savedList.innerHTML = "";
@@ -328,25 +385,30 @@
     }
     savedSection.hidden = false;
     visitasDiaCache.forEach(function (v, idx) {
-      var d = v.datos || {};
+      var counts = countVisitaDatos(v);
       var div = document.createElement("article");
       div.className = "vis-saved-item";
-      var novCount = (d.novedades || []).length;
-      var fotoCount = (d.fotos_visita || []).length;
+      var horaLbl = formatHora(v);
       div.innerHTML =
+        '<div class="vis-saved-item__head">' +
+        '<div class="vis-saved-item__info">' +
         "<strong>Visita " +
         (idx + 1) +
         "</strong> · " +
-        esc(v.hora_inicio) +
+        esc(horaLbl) +
         " — " +
         esc(v.cliente) +
         " / " +
         esc(v.unidad) +
-        "<br /><span class=\"vis-saved-meta\">" +
-        fotoCount +
+        '<br /><span class="vis-saved-meta">' +
+        counts.fotos +
         " foto(s) · " +
-        novCount +
-        " novedad(es)</span>";
+        counts.novedades +
+        " novedad(es)</span></div>" +
+        '<div class="vis-saved-item__actions">' +
+        '<button type="button" class="btn btn--ghost btn--tiny" data-act="ver-visita" data-idx="' +
+        idx +
+        '">Ver visita</button></div></div>';
       savedList.appendChild(div);
     });
   }
@@ -575,13 +637,50 @@
     cargarDia();
   });
 
-  btnGuardarKm.addEventListener("click", async function () {
-    hideTop();
-    if (!inpFecha.value) {
-      showTop("Indique la fecha.");
-      return;
+  function ensureKmDefaults() {
+    if (kmInicio && String(kmInicio.value).trim() === "") {
+      kmInicio.value = "0";
     }
-    btnGuardarKm.disabled = true;
+    if (kmFin && String(kmFin.value).trim() === "") {
+      kmFin.value = "0";
+    }
+  }
+
+  async function fetchPayloadInforme() {
+    var res = await window.AppApi.get("getVisitasDia", {
+      caller: session.usuario,
+      fecha: inpFecha.value,
+    });
+    var visitas = visitasDiaCache;
+    var jornada = {
+      km_inicio: kmInicio ? kmInicio.value : "",
+      km_fin: kmFin ? kmFin.value : "",
+    };
+    if (res && res.status === "success" && res.data) {
+      visitas = res.data.visitas || visitas;
+      jornada = res.data.jornada || jornada;
+      if (jornada.km_inicio !== "" && kmInicio) {
+        kmInicio.value = String(jornada.km_inicio);
+      }
+      if (jornada.km_fin !== "" && kmFin) {
+        kmFin.value = String(jornada.km_fin);
+      }
+    }
+    return {
+      fecha: inpFecha.value,
+      usuario: session.usuario,
+      visitas: visitas,
+      jornada: {
+        km_inicio: kmInicio ? kmInicio.value : jornada.km_inicio,
+        km_fin: kmFin ? kmFin.value : jornada.km_fin,
+      },
+    };
+  }
+
+  async function guardarJornadaKm(silent) {
+    if (!inpFecha.value) {
+      return { ok: false, message: "Indique la fecha." };
+    }
     try {
       var res = await window.AppApi.postVerify(
         "saveJornadaVisitas",
@@ -598,17 +697,115 @@
         400
       );
       if (!res || res.status !== "success") {
-        showTop((res && res.message) || "No se pudo guardar el kilometraje.");
-        return;
+        return { ok: false, message: (res && res.message) || "No se pudo guardar el kilometraje." };
       }
-      showTop("Kilometraje guardado.", "success");
       await cargarDia();
+      return { ok: true };
     } catch (e) {
-      showTop("Error de red.");
-    } finally {
-      btnGuardarKm.disabled = false;
+      return { ok: false, message: "Error de red al guardar kilometraje." };
+    }
+  }
+
+  btnGuardarKm.addEventListener("click", async function () {
+    hideTop();
+    btnGuardarKm.disabled = true;
+    var out = await guardarJornadaKm(false);
+    if (!out.ok) {
+      showTop(out.message);
+    } else {
+      showTop("Kilometraje guardado en la hoja visitas_jornada.", "success");
+    }
+    btnGuardarKm.disabled = false;
+  });
+
+  savedList.addEventListener("click", function (ev) {
+    var btn = ev.target.closest('[data-act="ver-visita"]');
+    if (!btn) {
+      return;
+    }
+    var idx = parseInt(btn.getAttribute("data-idx"), 10);
+    if (!isNaN(idx)) {
+      verVisitaGuardada(idx);
     }
   });
+
+  if (btnDlgVisitaCerrar) {
+    btnDlgVisitaCerrar.addEventListener("click", function () {
+      closeDialog(dlgVisitaDetalle);
+    });
+  }
+
+  function bindDlgClose(btn, dlg) {
+    if (btn) {
+      btn.addEventListener("click", function () {
+        closeDialog(dlg);
+      });
+    }
+  }
+  bindDlgClose(btnDlgInformeCerrar, dlgInformePreview);
+  bindDlgClose(btnDlgInformeCerrarHdr, dlgInformePreview);
+
+  async function generarInformePdf() {
+    if (!window.AppVisitasInforme || !window.AppVisitasInforme.downloadPdf) {
+      throw new Error("Generador de informe no disponible.");
+    }
+    ensureKmDefaults();
+    var kmOut = await guardarJornadaKm(true);
+    if (!kmOut.ok) {
+      showTop(
+        "Kilometraje: " +
+          kmOut.message +
+          " (use 0 en inicio y fin si no aplica). Generando informe…",
+        "info"
+      );
+    }
+    var payload = await fetchPayloadInforme();
+    if (!payload.visitas || !payload.visitas.length) {
+      throw new Error("No hay visitas guardadas para esta fecha.");
+    }
+    showTop("Generando PDF… Espere unos segundos.", "info");
+    await window.AppVisitasInforme.downloadPdf(payload);
+  }
+
+  if (btnPreviewInforme) {
+    btnPreviewInforme.addEventListener("click", async function () {
+      hideTop();
+      if (!visitasDiaCache.length) {
+        showTop("No hay visitas guardadas para esta fecha.");
+        return;
+      }
+      btnPreviewInforme.disabled = true;
+      try {
+        var payload = await fetchPayloadInforme();
+        if (!window.AppVisitasInforme || !window.AppVisitasInforme.renderInformePreview) {
+          showTop("Vista previa no disponible.");
+          return;
+        }
+        window.AppVisitasInforme.renderInformePreview(dlgInformeBody, payload);
+        openDialog(dlgInformePreview);
+      } catch (e) {
+        showTop(String(e.message || e) || "No se pudo cargar la vista previa.");
+      } finally {
+        btnPreviewInforme.disabled = false;
+      }
+    });
+  }
+
+  if (btnDlgInformePdf) {
+    btnDlgInformePdf.addEventListener("click", async function () {
+      hideTop();
+      btnDlgInformePdf.disabled = true;
+      try {
+        closeDialog(dlgInformePreview);
+        await generarInformePdf();
+        showTop("Informe PDF descargado.", "success");
+      } catch (e) {
+        showTop(String(e.message || e) || "Error al generar el PDF.");
+      } finally {
+        btnDlgInformePdf.disabled = false;
+      }
+    });
+  }
 
   btnInforme.addEventListener("click", async function () {
     hideTop();
@@ -617,25 +814,16 @@
       return;
     }
     btnInforme.disabled = true;
+    var prevLabel = btnInforme.textContent;
+    btnInforme.textContent = "Generando PDF…";
     try {
-      if (!window.AppVisitasInforme || !window.AppVisitasInforme.downloadPdf) {
-        showTop("Generador de informe no disponible.");
-        return;
-      }
-      await window.AppVisitasInforme.downloadPdf({
-        fecha: inpFecha.value,
-        usuario: session.usuario,
-        visitas: visitasDiaCache,
-        jornada: {
-          km_inicio: kmInicio.value,
-          km_fin: kmFin.value,
-        },
-      });
+      await generarInformePdf();
       showTop("Informe descargado.", "success");
     } catch (e) {
       showTop(String(e.message || e) || "Error al generar el PDF.");
     } finally {
       btnInforme.disabled = false;
+      btnInforme.textContent = prevLabel;
     }
   });
 
