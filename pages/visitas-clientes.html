@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Visitas a clientes</title>
+    <link rel="stylesheet" href="../common.css" />
+  </head>
+  <body>
+    <div class="page-inner">
+      <h2>Visitas a clientes</h2>
+      <p>
+        Registre las visitas del día. Use <strong>+ Nueva visita</strong> para agregar cada una. Al terminar,
+        indique el kilometraje y descargue el informe del día.
+      </p>
+
+      <div id="blockDeny" class="card" hidden>
+        <p style="margin: 0">Tu usuario no puede acceder a este módulo.</p>
+      </div>
+
+      <div id="blockMain" hidden>
+        <div id="msgTop" class="msg msg--error" role="alert" hidden></div>
+
+        <div class="card" style="margin-bottom: 1rem">
+          <h3 style="margin: 0 0 0.75rem; font-size: 1.05rem">Jornada</h3>
+          <div class="super-meta">
+            <div class="field" style="margin-bottom: 0">
+              <label for="inpFecha">Fecha</label>
+              <input class="input" type="date" id="inpFecha" />
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <label>Usuario</label>
+              <div class="input" id="usuarioDisplay" style="background: var(--color-bg); cursor: default"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="savedSection" class="card vis-saved-section" hidden>
+          <h3 style="margin: 0 0 0.75rem; font-size: 1.05rem">Visitas guardadas del día</h3>
+          <div id="savedList"></div>
+        </div>
+
+        <div class="toolbar" style="margin: 1rem 0">
+          <button type="button" class="btn btn--primary" id="btnNuevaVisita">+ Nueva visita</button>
+        </div>
+
+        <div id="draftStack" class="vis-stack" aria-live="polite"></div>
+
+        <div class="card vis-jornada-card" style="margin-top: 1rem">
+          <h3 style="margin: 0 0 0.75rem; font-size: 1.05rem">Cierre de jornada</h3>
+          <p style="margin: 0 0 0.75rem; font-size: 0.9rem; color: var(--color-text-muted)">
+            Cuando haya registrado todas las visitas del día, complete el kilometraje.
+          </p>
+          <div class="as-field-row">
+            <div class="field">
+              <label for="kmInicio">Kilometraje de inicio</label>
+              <input class="input" type="number" min="0" step="0.1" id="kmInicio" placeholder="Ej. 125430.5" />
+            </div>
+            <div class="field">
+              <label for="kmFin">Kilometraje de fin</label>
+              <input class="input" type="number" min="0" step="0.1" id="kmFin" placeholder="Ej. 125580.2" />
+            </div>
+          </div>
+          <div class="vis-jornada-actions">
+            <button type="button" class="btn btn--ghost" id="btnGuardarKm">Guardar kilometraje</button>
+            <button type="button" class="btn btn--primary" id="btnInforme">Descargar informe del día</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/cloudinary-upload.js"></script>
+    <script src="../js/visitas-clientes-informe.js"></script>
+    <script src="../js/visitas-clientes.js"></script>
+  </body>
+</html>
