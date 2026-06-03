@@ -1,16 +1,16 @@
 /**
  * Configuración global — reemplaza SCRIPT_URL tras desplegar Apps Script como Web App.
  * El script debe estar vinculado al mismo spreadsheet (bd_supervisor).
- * BUILD: 20250602-visitas — verificar en producción: buscar "visitasClientes" en /js/config.js
+ * BUILD: 20250602-vis2 — visitas: vista previa + informe PDF
  */
 (function (global) {
   "use strict";
 
-  var CONFIG_BUILD = "20250602-visitas";
+  var CONFIG_BUILD = "20250602-vis2";
 
   /** @type {string} URL del deploy (termina en /exec) */
   var SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycby8r9az1F8Q8Or0ZAzsiaO3SfSLW4LMBNhJI9u68EKYlgvmHqVmccEWCiQUFPQZ90lk/exec";
+    "https://script.google.com/macros/s/AKfycbydUXpO-JyDgcHglJ3nPK2XbFFk826muIPww6FoFZZPhkbA_Zh0dqEUP5RAsntWL1_p/exec";
 
   /** Navegación por rol (Usuarios solo administrador). */
   var MODULE_ACCESS = {
